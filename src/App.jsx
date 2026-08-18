@@ -402,7 +402,7 @@ export default function App() {
           <div className="border border-[#262220] p-[2px]">
             <div className="relative flex flex-col md:flex-row h-24 md:h-11 bg-[repeating-linear-gradient(90deg,#EFE9D8,#EFE9D8_33px,#E3DCC7_33px,#E3DCC7_34px)]">
 
-              {/* Savings zone */}
+
               <div
                 id="lft-savings-zone"
                 className="relative flex items-center justify-center overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#262220] shrink-0"
@@ -414,7 +414,7 @@ export default function App() {
                   style={{ width: `${pct}%` }}
                 ></div>
                 <span className="relative z-10 font-mono text-[9px] md:text-[11px] font-bold text-[#1E3324] bg-white/55 px-1.5 py-0.5 rounded">
-                  YOUR SAVINGS · {fmt(settings.goal)}
+                  CURRENT SAVINGS · {fmt(settings.goal)}
                 </span>
               </div>
 
@@ -425,7 +425,7 @@ export default function App() {
                 style={{ flexBasis: `${loanPct}%` }}
               >
                 <span className="font-mono text-[9px] md:text-[11px] font-bold text-[#2B4570] bg-white/55 px-1.5 py-0.5 rounded">
-                  LOAN · {fmt(settings.loan)}
+                  LOAN {fmt(settings.loan)}
                 </span>
               </div>
 
