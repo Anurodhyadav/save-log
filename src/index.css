@@ -1,0 +1,240 @@
+/* Copying CSS design tokens and custom structures from original app */
+body {
+    margin: 0;
+    padding: 0;
+    background: #FBF8F0;
+}
+
+/* ── Auth bar ─────────────────────────────────────────── */
+#lft-auth-bar {
+    background: #262220;
+    color: #EFE9D8;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    min-height: 46px;
+}
+
+#lft-auth-bar .auth-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #EFE9D8;
+    opacity: 0.9;
+}
+
+#lft-auth-bar .auth-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#lft-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #7A6E5D;
+}
+
+#lft-user-name {
+    color: #C4BAA9;
+    font-size: 13px;
+}
+
+.lft-role-badge {
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.lft-role-badge.editor {
+    background: #3F6B4C;
+    color: #D8EAE0;
+}
+
+.lft-role-badge.viewer {
+    background: #4a3f2f;
+    color: #C4BAA9;
+}
+
+#lft-signin-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #FBF8F0;
+    border: none;
+    border-radius: 2px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #262220;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#lft-signin-btn:hover { background: #EFE9D8; }
+
+#lft-signout-btn {
+    padding: 5px 12px;
+    background: none;
+    border: 1px solid #4a3f2f;
+    border-radius: 2px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    color: #7A6E5D;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+#lft-signout-btn:hover { border-color: #A8322D; color: #A8322D; }
+
+/* ── Loading overlay ──────────────────────────────────── */
+#lft-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: #FBF8F0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    z-index: 100;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+#lft-loading-overlay .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #D9D3C0;
+    border-top-color: #3F6B4C;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+#lft-loading-overlay p {
+    font-size: 13px;
+    color: #7A6E5D;
+    margin: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Viewer read-only notice ──────────────────────────── */
+#lft-viewer-notice {
+    background: #F0EBD8;
+    border: 1px solid #D9D3C0;
+    border-left: 3px solid #D9A404;
+    padding: 8px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    color: #7A6E5D;
+    margin-bottom: 16px;
+}
+
+/* ── Sign-in prompt ───────────────────────────────────── */
+#lft-signin-prompt {
+    text-align: center;
+    padding: 48px 24px;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+#lft-signin-prompt h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: #262220;
+    margin: 0 0 8px;
+}
+
+#lft-signin-prompt p {
+    font-size: 13px;
+    color: #7A6E5D;
+    margin: 0 0 24px;
+}
+
+#lft-signin-prompt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    background: #262220;
+    color: #EFE9D8;
+    border: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#lft-signin-prompt-btn:hover { background: #3F6B4C; }
+
+/* ── Main content ─────────────────────────────────────── */
+.lft-root {
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #262220;
+}
+
+.lft-num {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.lft-display {
+    font-family: 'Fraunces', serif;
+}
+
+.lft-root input {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Disabled state for viewer */
+.lft-editor-only.disabled-for-viewer {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Sync status */
+#lft-sync-status {
+    font-size: 11px;
+    color: #7A6E5D;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#lft-sync-status .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3F6B4C;
+    flex-shrink: 0;
+}
+
+#lft-sync-status .dot.syncing {
+    background: #D9A404;
+    animation: pulse 1s ease infinite;
+}
+
+#lft-sync-status .dot.error {
+    background: #A8322D;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}

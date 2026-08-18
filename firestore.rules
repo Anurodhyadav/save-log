@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users collection ─────────────────────────────────────────────
+    // • Users can read their own document (to check admin flag)
+    // • Users can create/update their own document (for auto-registration & lastSignIn)
+    //   but cannot grant themselves admin — only set it via Firebase Console
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Allow create only if admin field is NOT included (or explicitly false)
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && (!('admin' in request.resource.data) || request.resource.data.admin == false);
+
+      // Allow update only if the admin field is not being changed
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin']);
+    }
+
+    // ── Tracker settings document ─────────────────────────────────────
+    // All authenticated users can read; only admins can write.
+    match /tracker/{trackerId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+    }
+
+    // ── Deposits sub-collection ───────────────────────────────────────
+    // All authenticated users can read; only admins can create/delete.
+    match /tracker/{trackerId}/deposits/{depositId} {
+      allow read:   if request.auth != null;
+      allow create: if request.auth != null
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+      allow delete: if request.auth != null
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+      allow update: if false; // deposits are immutable; delete and re-add instead
+    }
+  }
+}
