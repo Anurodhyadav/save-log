@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged 
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
 } from 'firebase/auth';
-import { 
-  getDoc, 
-  setDoc, 
-  addDoc, 
-  deleteDoc, 
-  doc, 
-  collection, 
-  onSnapshot, 
-  orderBy, 
-  query, 
-  serverTimestamp, 
-  writeBatch 
+import {
+  getDoc,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  doc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  writeBatch
 } from 'firebase/firestore';
 import { auth, googleProvider, db, trackerRef, depositsRef } from './firebase';
 
@@ -175,7 +175,7 @@ export default function App() {
     for (let i = 0; i * w < 680; i++) {
       const x = i * w;
       const color = colors[i % colors.length];
-      const pts = flip 
+      const pts = flip
         ? `${x},0 ${x + w},0 ${x + w / 2},${h}`
         : `${x},${h} ${x + w},${h} ${x + w / 2},0`;
       triangles.push(
@@ -240,7 +240,7 @@ export default function App() {
     }
     setErrorMsg('');
     setSyncState('syncing');
-    
+
     addDoc(depositsRef, {
       date: date || getTodayStr(),
       amount: parsedAmt,
@@ -277,7 +277,7 @@ export default function App() {
   const handleReset = async () => {
     if (!isAdmin) return;
     if (!window.confirm('Reset all tracker data? This will delete ALL deposits and restore default settings. This cannot be undone.')) return;
-    
+
     setSyncState('syncing');
     try {
       const batch = writeBatch(db);
@@ -285,7 +285,7 @@ export default function App() {
         batch.delete(doc(depositsRef, e.id));
       });
       await batch.commit();
-      
+
       await setDoc(trackerRef, {
         ...defaultSettings,
         updatedAt: serverTimestamp(),
@@ -331,16 +331,16 @@ export default function App() {
         <div id="lft-auth-bar">
           <span className="auth-brand">Janakpur Land Fund</span>
           <button id="lft-signin-btn" onClick={handleSignIn}>
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style={{marginRight: 8}}>
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style={{ marginRight: 8 }}>
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
             </svg>
             Sign in with Google
           </button>
         </div>
-        <div id="lft-signin-prompt" style={{maxWidth: 680, margin: '0 auto', display: 'block'}}>
+        <div id="lft-signin-prompt" style={{ maxWidth: 680, margin: '0 auto', display: 'block' }}>
           <h2>Sign in to view the tracker</h2>
           <p>This tracker is private. Please sign in with your Google account to continue.</p>
           <button id="lft-signin-prompt-btn" onClick={handleSignIn}>
@@ -353,207 +353,222 @@ export default function App() {
 
   return (
     <>
-      <div id="lft-auth-bar">
-        <span className="auth-brand">Janakpur Land Fund</span>
-        <div className="auth-right">
-          <div id="lft-sync-status" style={{display: 'flex'}}>
+      <div id="lft-auth-bar" className="flex items-center justify-between px-4 py-2 bg-[#262220] text-[#EFE9D8] min-h-[46px]">
+        <span className="font-semibold tracking-wide text-sm md:text-base opacity-90 font-serif">Saving Fund</span>
+        <div className="flex items-center gap-2.5">
+          <div id="lft-sync-status" className="flex items-center gap-1.5 text-xs text-[#7A6E5D]">
             <span className={`dot ${syncState !== 'synced' ? syncState : ''}`} id="lft-sync-dot"></span>
             <span id="lft-sync-text">{syncState === 'synced' ? 'Synced' : syncState === 'syncing' ? 'Saving…' : 'Error'}</span>
           </div>
-          <span id="lft-role-badge" className={`lft-role-badge ${isAdmin ? 'editor' : 'viewer'}`}>
+          <span id="lft-role-badge" className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase ${isAdmin ? 'bg-[#3F6B4C] text-[#D8EAE0]' : 'bg-[#4a3f2f] text-[#C4BAA9]'}`}>
             {isAdmin ? 'Admin' : 'Viewer'}
           </span>
-          {user.photoURL && <img id="lft-user-avatar" src={user.photoURL} alt="User avatar" style={{display: 'inline-block'}} />}
-          <span id="lft-user-name">{user.displayName || user.email}</span>
-          <button id="lft-signout-btn" style={{display: 'block'}} onClick={handleSignOut}>Sign out</button>
+          {user.photoURL && <img id="lft-user-avatar" src={user.photoURL} alt="User avatar" className="w-7 h-7 rounded-full object-cover border border-[#7A6E5D]" />}
+          <span id="lft-user-name" className="text-xs text-[#C4BAA9] hidden sm:inline">{user.displayName || user.email}</span>
+          <button id="lft-signout-btn" className="px-3 py-1 border border-[#4a3f2f] rounded text-xs text-[#7A6E5D] hover:border-[#A8322D] hover:color-[#A8322D] transition-colors" onClick={handleSignOut}>Sign out</button>
         </div>
       </div>
 
-      <div id="lft-main" style={{display: 'block', padding: '24px 16px'}}>
-        <div className="lft-root" style={{maxWidth: 680, margin: '0 auto'}}>
-          
+      <div id="lft-main" className="block px-4 py-6 md:py-8">
+        <div className="w-full max-w-[680px] mx-auto font-sans text-[#262220]">
+
           {!isAdmin && (
-            <div id="lft-viewer-notice" style={{display: 'block'}}>
+            <div id="lft-viewer-notice" className="mb-4 p-2.5 bg-[#F0EBD8] border border-[#D9D3C0] border-l-[3px] border-l-[#D9A404] text-xs text-[#7A6E5D]">
               👁 You are viewing in <strong>read-only</strong> mode. Contact the tracker owner to request admin access.
             </div>
           )}
 
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 4}}>
+          <div className="flex justify-between items-end mb-1">
             <div>
-              <div style={{fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#7A6E5D'}}>
+              <div className="text-[10px] md:text-xs tracking-widest uppercase text-[#7A6E5D]">
                 Janakpur land fund
               </div>
-              <div className="lft-display" style={{fontSize: 26, fontWeight: 600, color: '#262220'}}>
-                5 dhur plot, Rs 40,00,000
+              <div className="font-mono text-base md:text-xl font-semibold text-[#262220]">
+                Rs 40,00,000
               </div>
             </div>
-            <div style={{textAlign: 'right'}}>
-              <div style={{fontSize: 12, color: '#7A6E5D'}}>Saved so far</div>
-              <div className="lft-num" id="lft-saved-total" style={{fontSize: 22, fontWeight: 700, color: '#3F6B4C'}}>
+            <div className="text-right">
+              <div className="text-[10px] md:text-xs text-[#7A6E5D]">Saved so far</div>
+              <div className="font-mono text-base md:text-xl font-bold text-[#3F6B4C]" id="lft-saved-total">
                 {fmt(totalSaved)}
               </div>
             </div>
           </div>
 
-          <svg width="100%" height="14" viewBox="0 0 680 14" style={{display: 'block', margin: '10px 0 2px'}}>
+          <svg width="100%" height="14" viewBox="0 0 680 14" className="block my-2.5 md:my-3">
             <g id="lft-border-top">{renderTriangles(false)}</g>
           </svg>
 
-          <div style={{border: '1px solid #262220', padding: 2}}>
-            <div style={{position: 'relative', height: 46, background: 'repeating-linear-gradient(90deg, #EFE9D8, #EFE9D8 33px, #E3DCC7 33px, #E3DCC7 34px)'}}>
-              <div id="lft-savings-zone" style={{position: 'absolute', left: 0, top: 0, height: '100%', width: `${savingsPct}%`, overflow: 'hidden', borderRight: '2px dashed #262220'}}>
-                <div id="lft-savings-fill" style={{height: '100%', width: `${pct}%`, background: '#3F6B4C', transition: 'width 0.5s ease'}}></div>
-              </div>
-              <div id="lft-loan-zone" style={{position: 'absolute', left: `${savingsPct}%`, top: 0, height: '100%', width: `${loanPct}%`, background: 'repeating-linear-gradient(45deg, #DDE4E0, #DDE4E0 6px, #C7D2CB 6px, #C7D2CB 12px)'}}></div>
-              <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-around', pointerEvents: 'none'}}>
-                <span className="lft-num" style={{fontSize: 11, fontWeight: 700, color: '#1E3324', background: 'rgba(255,255,255,0.55)', padding: '1px 6px'}}>
+          <div className="border border-[#262220] p-[2px]">
+            <div className="relative flex flex-col md:flex-row h-24 md:h-11 bg-[repeating-linear-gradient(90deg,#EFE9D8,#EFE9D8_33px,#E3DCC7_33px,#E3DCC7_34px)]">
+
+              {/* Savings zone */}
+              <div
+                id="lft-savings-zone"
+                className="relative flex items-center justify-center overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#262220] shrink-0"
+                style={{ flexBasis: `${savingsPct}%` }}
+              >
+                <div
+                  id="lft-savings-fill"
+                  className="absolute inset-0 bg-[#3F6B4C] transition-[width] duration-500 ease"
+                  style={{ width: `${pct}%` }}
+                ></div>
+                <span className="relative z-10 font-mono text-[9px] md:text-[11px] font-bold text-[#1E3324] bg-white/55 px-1.5 py-0.5 rounded">
                   YOUR SAVINGS · {fmt(settings.goal)}
                 </span>
-                <span className="lft-num" style={{fontSize: 11, fontWeight: 700, color: '#2B4570', background: 'rgba(255,255,255,0.55)', padding: '1px 6px'}}>
+              </div>
+
+              {/* Loan zone */}
+              <div
+                id="lft-loan-zone"
+                className="relative flex items-center justify-center bg-[repeating-linear-gradient(45deg,#DDE4E0,#DDE4E0_6px,#C7D2CB_6px,#C7D2CB_12px)] shrink-0"
+                style={{ flexBasis: `${loanPct}%` }}
+              >
+                <span className="font-mono text-[9px] md:text-[11px] font-bold text-[#2B4570] bg-white/55 px-1.5 py-0.5 rounded">
                   LOAN · {fmt(settings.loan)}
                 </span>
               </div>
+
             </div>
           </div>
 
-          <svg width="100%" height="14" viewBox="0 0 680 14" style={{display: 'block', margin: '2px 0 18px'}}>
+          <svg width="100%" height="14" viewBox="0 0 680 14" className="block mt-1 mb-5 md:mb-6">
             <g id="lft-border-bottom">{renderTriangles(true)}</g>
           </svg>
 
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 22}}>
-            <div style={{background: '#F2EFE4', border: '1px solid #D9D3C0', padding: '10px 12px'}}>
-              <div style={{fontSize: 11, color: '#7A6E5D'}}>Progress</div>
-              <div className="lft-num" style={{fontSize: 18, fontWeight: 700}}>{Math.round(pct)}%</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+            <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-2.5 md:p-3">
+              <div className="text-[10px] md:text-xs text-[#7A6E5D]">Progress</div>
+              <div className="font-mono text-base md:text-lg font-bold">{Math.round(pct)}%</div>
             </div>
-            <div style={{background: '#F2EFE4', border: '1px solid #D9D3C0', padding: '10px 12px'}}>
-              <div style={{fontSize: 11, color: '#7A6E5D'}}>Remaining</div>
-              <div className="lft-num" style={{fontSize: 18, fontWeight: 700}}>{fmt(remaining)}</div>
+            <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-2.5 md:p-3">
+              <div className="text-[10px] md:text-xs text-[#7A6E5D]">Remaining</div>
+              <div className="font-mono text-base md:text-lg font-bold">{fmt(remaining)}</div>
             </div>
-            <div style={{background: '#F2EFE4', border: '1px solid #D9D3C0', padding: '10px 12px'}}>
-              <div style={{fontSize: 11, color: '#7A6E5D'}}>Avg / month</div>
-              <div className="lft-num" style={{fontSize: 18, fontWeight: 700}}>{avg > 0 ? fmt(avg) : '-'}</div>
+            <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-2.5 md:p-3">
+              <div className="text-[10px] md:text-xs text-[#7A6E5D]">Avg / month</div>
+              <div className="font-mono text-base md:text-lg font-bold">{avg > 0 ? fmt(avg) : '-'}</div>
             </div>
-            <div style={{background: '#F2EFE4', border: '1px solid #D9D3C0', padding: '10px 12px'}}>
-              <div style={{fontSize: 11, color: '#7A6E5D'}}>On track for</div>
-              <div className="lft-num" style={{fontSize: 18, fontWeight: 700}}>{etaText}</div>
+            <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-2.5 md:p-3">
+              <div className="text-[10px] md:text-xs text-[#7A6E5D]">On track for</div>
+              <div className="font-mono text-base md:text-lg font-bold">{etaText}</div>
             </div>
           </div>
 
-          <div id="lft-pace-note" style={{fontSize: 13, color: '#7A6E5D', margin: '-12px 0 20px'}}>
+          <div id="lft-pace-note" className="text-xs md:text-sm text-[#7A6E5D] -mt-3 mb-5">
             {paceNoteText}
           </div>
 
           {/* Goal settings */}
-          <details className={`lft-editor-only ${!isAdmin ? 'disabled-for-viewer' : ''}`} style={{marginBottom: 20, border: '1px solid #D9D3C0', background: '#FBF8F0'}}>
-            <summary style={{cursor: 'pointer', padding: '10px 12px', fontSize: 13, fontWeight: 600, color: '#262220'}}>
+          <details className={`lft-editor-only ${!isAdmin ? 'disabled-for-viewer' : ''} mb-5 border border-[#D9D3C0] bg-[#FBF8F0]`}>
+            <summary className="cursor-pointer p-2.5 md:p-3 text-xs md:text-sm font-semibold text-[#262220]">
               Goal settings
             </summary>
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: '4px 12px 14px'}}>
-              <label style={{fontSize: 12, color: '#7A6E5D'}}>Target savings (Rs)
-                <input 
-                  type="number" 
-                  value={settings.goal} 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5 px-3 pb-3">
+              <label className="text-[11px] text-[#7A6E5D]">Target savings (Rs)
+                <input
+                  type="number"
+                  value={settings.goal}
                   onChange={(e) => handleSettingChange('goal', e.target.value)}
                   disabled={!isAdmin}
                   step="1000"
-                  style={{width: '100%', padding: '6px 8px', border: '1px solid #D9D3C0', marginTop: 4}} 
+                  className="w-full font-mono text-xs px-2 py-1.5 border border-[#D9D3C0] rounded mt-1 bg-white"
                 />
               </label>
-              <label style={{fontSize: 12, color: '#7A6E5D'}}>Loan amount (Rs)
-                <input 
-                  type="number" 
-                  value={settings.loan} 
+              <label className="text-[11px] text-[#7A6E5D]">Loan amount (Rs)
+                <input
+                  type="number"
+                  value={settings.loan}
                   onChange={(e) => handleSettingChange('loan', e.target.value)}
                   disabled={!isAdmin}
                   step="1000"
-                  style={{width: '100%', padding: '6px 8px', border: '1px solid #D9D3C0', marginTop: 4}} 
+                  className="w-full font-mono text-xs px-2 py-1.5 border border-[#D9D3C0] rounded mt-1 bg-white"
                 />
               </label>
-              <label style={{fontSize: 12, color: '#7A6E5D'}}>Starting balance already saved (Rs)
-                <input 
-                  type="number" 
-                  value={settings.start} 
+              <label className="text-[11px] text-[#7A6E5D]">Starting balance already saved (Rs)
+                <input
+                  type="number"
+                  value={settings.start}
                   onChange={(e) => handleSettingChange('start', e.target.value)}
                   disabled={!isAdmin}
                   step="1000"
-                  style={{width: '100%', padding: '6px 8px', border: '1px solid #D9D3C0', marginTop: 4}} 
+                  className="w-full font-mono text-xs px-2 py-1.5 border border-[#D9D3C0] rounded mt-1 bg-white"
                 />
               </label>
-              <label style={{fontSize: 12, color: '#7A6E5D'}}>Monthly target (Rs)
-                <input 
-                  type="number" 
-                  value={settings.monthlyTarget} 
+              <label className="text-[11px] text-[#7A6E5D]">Monthly target (Rs)
+                <input
+                  type="number"
+                  value={settings.monthlyTarget}
                   onChange={(e) => handleSettingChange('monthlyTarget', e.target.value)}
                   disabled={!isAdmin}
                   step="1000"
-                  style={{width: '100%', padding: '6px 8px', border: '1px solid #D9D3C0', marginTop: 4}} 
+                  className="w-full font-mono text-xs px-2 py-1.5 border border-[#D9D3C0] rounded mt-1 bg-white"
                 />
               </label>
             </div>
           </details>
 
           {/* Add deposit form */}
-          <form 
-            onSubmit={handleAddDeposit} 
-            className={`lft-editor-only ${!isAdmin ? 'disabled-for-viewer' : ''}`} 
-            style={{display: 'flex', alignItems: 'flex-end', gap: 10, marginBottom: 6, flexWrap: 'wrap'}}
+          <form
+            onSubmit={handleAddDeposit}
+            className={`lft-editor-only ${!isAdmin ? 'disabled-for-viewer' : ''} flex flex-col sm:flex-row items-stretch sm:items-end gap-3 mb-2`}
           >
-            <label style={{fontSize: 12, color: '#7A6E5D', flex: 1, minWidth: 130}}>Date
-              <input 
-                type="date" 
-                value={date} 
+            <label className="text-[11px] text-[#7A6E5D] flex-1">Dated
+              <input
+                type="date"
+                value={date}
                 onChange={(e) => setDate(e.target.value)}
                 disabled={!isAdmin}
-                style={{width: '100%', padding: '7px 8px', border: '1px solid #262220', marginTop: 4}} 
+                className="w-full font-mono text-xs px-2.5 py-1.5 border border-[#262220] rounded mt-1 bg-white"
               />
             </label>
-            <label style={{fontSize: 12, color: '#7A6E5D', flex: 1, minWidth: 130}}>Amount (Rs)
-              <input 
-                type="number" 
+            <label className="text-[11px] text-[#7A6E5D] flex-1">Amount (Rs)
+              <input
+                type="number"
                 ref={amountInputRef}
-                value={amount} 
+                value={amount}
                 onChange={(e) => { setAmount(e.target.value); setErrorMsg(''); }}
                 disabled={!isAdmin}
-                step="100" 
+                step="100"
                 placeholder="500"
-                style={{width: '100%', padding: '7px 8px', border: '1px solid #262220', marginTop: 4}} 
+                className="w-full font-mono text-xs px-2.5 py-1.5 border border-[#262220] rounded mt-1 bg-white"
               />
             </label>
-            <label style={{fontSize: 12, color: '#7A6E5D', flex: 1.4, minWidth: 150}}>Note (optional)
-              <input 
-                type="text" 
-                value={note} 
+            <label className="text-[11px] text-[#7A6E5D] flex-[1.5]">Note (optional)
+              <input
+                type="text"
+                value={note}
                 onChange={(e) => setNote(e.target.value)}
                 disabled={!isAdmin}
                 placeholder="daily savings, salary top-up..."
-                style={{width: '100%', padding: '7px 8px', border: '1px solid #262220', marginTop: 4}} 
+                className="w-full text-xs px-2.5 py-1.5 border border-[#262220] rounded mt-1 bg-white"
               />
             </label>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={!isAdmin}
-              style={{padding: '8px 16px', background: '#3F6B4C', color: '#F2EFE4', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', height: 34}}
+              className="px-4 py-1.5 bg-[#3F6B4C] text-[#F2EFE4] border border-[#262220] rounded text-xs font-semibold hover:bg-[#32563d] transition-colors cursor-pointer self-stretch sm:self-auto h-[32px] mt-1 sm:mt-0"
             >
               Add deposit
             </button>
           </form>
 
           {errorMsg && (
-            <div id="lft-entry-error" style={{fontSize: 12, color: '#A8322D', margin: '2px 0 12px', display: 'block'}}>
+            <div id="lft-entry-error" className="text-xs text-[#A8322D] my-1">
               {errorMsg}
             </div>
           )}
 
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '22px 0 4px'}}>
-            <div style={{fontSize: 13, fontWeight: 600}}>Statement</div>
-            <div style={{fontSize: 12, color: '#7A6E5D'}}>
+          <div className="flex justify-between items-baseline mt-6 mb-2">
+            <div className="text-xs md:text-sm font-semibold">Statement</div>
+            <div className="text-[11px] md:text-xs text-[#7A6E5D]">
               {entries.length} {entries.length === 1 ? 'deposit' : 'deposits'}
             </div>
           </div>
 
-          <div id="lft-entries-wrap">
+          <div id="lft-entries-wrap" className="max-h-72 overflow-y-auto pr-1 border-t border-[#D9D3C0]">
             {entries.length === 0 ? (
-              <div style={{fontSize: 13, color: '#7A6E5D', padding: '14px 0', borderTop: '1px solid #D9D3C0'}}>
+              <div className="text-xs md:text-sm text-[#7A6E5D] py-3.5">
                 No deposits logged yet.{isAdmin && ' Add your first one above.'}
               </div>
             ) : (
@@ -562,10 +577,10 @@ export default function App() {
                 const label = dMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
                 return (
-                  <div key={group.key}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0 4px', marginTop: 6, borderTop: '1px solid #262220', fontSize: 12, fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase', color: '#262220'}}>
+                  <div key={group.key} className="mb-4">
+                    <div className="flex justify-between items-center py-2.5 mt-1 border-b border-[#262220] text-xs font-bold tracking-wider uppercase text-[#262220]">
                       <span>{label}</span>
-                      <span className="lft-num">{fmt(group.total)}</span>
+                      <span className="lft-num font-mono">{fmt(group.total)}</span>
                     </div>
 
                     {group.entries.map((entry) => {
@@ -573,17 +588,17 @@ export default function App() {
                       const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
 
                       return (
-                        <div key={entry.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderTop: '1px solid #EFE9D8', fontSize: 13}}>
-                          <span style={{color: '#262220', display: 'flex', gap: 8, alignItems: 'baseline'}}>
-                            <span className="lft-num" style={{color: '#7A6E5D', fontSize: 12, minWidth: 52}}>{dayLabel}</span>
-                            {entry.note && <span style={{color: '#7A6E5D'}}>{entry.note}</span>}
+                        <div key={entry.id} className="flex justify-between items-center py-2 border-b border-[#EFE9D8] text-xs md:text-sm">
+                          <span className="text-[#262220] flex gap-2.5 items-baseline">
+                            <span className="lft-num font-mono text-[11px] md:text-xs text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
+                            {entry.note && <span className="text-[#7A6E5D] text-xs">{entry.note}</span>}
                           </span>
-                          <span style={{display: 'flex', alignItems: 'center', gap: 10}}>
-                            <span className="lft-num" style={{fontWeight: 600}}>{fmt(entry.amount)}</span>
+                          <span className="flex items-center gap-2.5">
+                            <span className="lft-num font-mono font-semibold">{fmt(entry.amount)}</span>
                             {isAdmin && (
-                              <button 
+                              <button
                                 onClick={() => handleRemoveDeposit(entry.id)}
-                                style={{background: 'none', border: 'none', color: '#A8322D', cursor: 'pointer', fontSize: 12, padding: '2px 6px'}}
+                                className="bg-none border-none text-[#A8322D] cursor-pointer text-xs px-1.5 py-0.5 hover:underline"
                               >
                                 Remove
                               </button>
@@ -599,10 +614,10 @@ export default function App() {
           </div>
 
           {isAdmin && (
-            <div style={{marginTop: 18, textAlign: 'right'}}>
-              <button 
+            <div className="mt-4 text-right">
+              <button
                 onClick={handleReset}
-                style={{padding: '6px 12px', background: 'none', border: '1px solid #D9D3C0', color: '#7A6E5D', fontSize: 12, cursor: 'pointer'}}
+                className="px-3 py-1.5 bg-none border border-[#D9D3C0] text-[#7A6E5D] text-xs cursor-pointer hover:border-[#262220] hover:text-[#262220] transition-colors"
               >
                 Reset tracker
               </button>
