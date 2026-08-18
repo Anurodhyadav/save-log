@@ -513,13 +513,13 @@ export default function App() {
             onSubmit={handleAddDeposit}
             className={`lft-editor-only ${!isAdmin ? 'disabled-for-viewer' : ''} flex flex-col sm:flex-row items-stretch sm:items-end gap-3 mb-2`}
           >
-            <label className="text-[11px] text-[#7A6E5D] flex-1">Dated
+            <label className="text-[11px] text-[#7A6E5D] flex-1">Date
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 disabled={!isAdmin}
-                className="w-full font-mono text-xs px-2.5 py-1.5 border border-[#262220] rounded mt-1 bg-white"
+                className="w-full font-mono text-xs pl-2.5 pr-8 py-1.5 border border-[#262220] rounded mt-1 bg-white appearance-none"
               />
             </label>
             <label className="text-[11px] text-[#7A6E5D] flex-1">Amount (Rs)
