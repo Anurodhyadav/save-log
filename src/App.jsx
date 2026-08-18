@@ -414,7 +414,7 @@ export default function App() {
                   style={{ width: `${pct}%` }}
                 ></div>
                 <span className="relative z-10 font-mono text-[9px] md:text-[11px] font-bold text-[#1E3324] bg-white/55 px-1.5 py-0.5 rounded">
-                  CURRENT SAVINGS · {fmt(settings.goal)}
+                  SAVINGS GOAL · {fmt(settings.goal)}
                 </span>
               </div>
 
@@ -425,7 +425,7 @@ export default function App() {
                 style={{ flexBasis: `${loanPct}%` }}
               >
                 <span className="font-mono text-[9px] md:text-[11px] font-bold text-[#2B4570] bg-white/55 px-1.5 py-0.5 rounded">
-                  LOAN {fmt(settings.loan)}
+                  LOAN GOAL {fmt(settings.loan)}
                 </span>
               </div>
 
