@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Janakpur land fund tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  body { margin: 0; padding: 24px 16px; background: #FBF8F0; }
+  .lft-root { font-family: 'IBM Plex Sans', sans-serif; color: #262220; }
+  .lft-num { font-family: 'JetBrains Mono', monospace; }
+  .lft-display { font-family: 'Fraunces', serif; }
+  .lft-root input { font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<div class="lft-root" style="max-width: 680px; margin: 0 auto;">
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 4px;">
+    <div>
+      <div style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#7A6E5D;">Janakpur land fund</div>
+      <div class="lft-display" style="font-size:26px; font-weight:600; color:#262220;">5 dhur plot, Rs 40,00,000</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:12px; color:#7A6E5D;">Saved so far</div>
+      <div class="lft-num" id="lft-saved-total" style="font-size:22px; font-weight:700; color:#3F6B4C;">Rs 0</div>
+    </div>
+  </div>
+
+  <svg width="100%" height="14" viewBox="0 0 680 14" style="display:block; margin: 10px 0 2px;">
+    <g id="lft-border-top"></g>
+  </svg>
+
+  <div style="border:1px solid #262220; padding: 2px;">
+    <div style="position:relative; height: 46px; background: repeating-linear-gradient(90deg, #EFE9D8, #EFE9D8 33px, #E3DCC7 33px, #E3DCC7 34px);">
+      <div id="lft-savings-zone" style="position:absolute; left:0; top:0; height:100%; width:50%; overflow:hidden; border-right: 2px dashed #262220;">
+        <div id="lft-savings-fill" style="height:100%; width:0%; background:#3F6B4C; transition: width 0.5s ease;"></div>
+      </div>
+      <div id="lft-loan-zone" style="position:absolute; left:50%; top:0; height:100%; width:50%; background: repeating-linear-gradient(45deg, #DDE4E0, #DDE4E0 6px, #C7D2CB 6px, #C7D2CB 12px);"></div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:space-around; pointer-events:none;">
+        <span class="lft-num" style="font-size:11px; font-weight:700; color:#1E3324; background:rgba(255,255,255,0.55); padding:1px 6px;">YOUR SAVINGS · Rs 20,00,000</span>
+        <span class="lft-num" style="font-size:11px; font-weight:700; color:#2B4570; background:rgba(255,255,255,0.55); padding:1px 6px;">LOAN · Rs 20,00,000</span>
+      </div>
+    </div>
+  </div>
+
+  <svg width="100%" height="14" viewBox="0 0 680 14" style="display:block; margin: 2px 0 18px;">
+    <g id="lft-border-bottom"></g>
+  </svg>
+
+  <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px;">
+    <div style="background:#F2EFE4; border:1px solid #D9D3C0; padding: 10px 12px;">
+      <div style="font-size:11px; color:#7A6E5D;">Progress</div>
+      <div class="lft-num" id="lft-pct" style="font-size:18px; font-weight:700;">0%</div>
+    </div>
+    <div style="background:#F2EFE4; border:1px solid #D9D3C0; padding: 10px 12px;">
+      <div style="font-size:11px; color:#7A6E5D;">Remaining</div>
+      <div class="lft-num" id="lft-remaining" style="font-size:18px; font-weight:700;">Rs 0</div>
+    </div>
+    <div style="background:#F2EFE4; border:1px solid #D9D3C0; padding: 10px 12px;">
+      <div style="font-size:11px; color:#7A6E5D;">Avg / month</div>
+      <div class="lft-num" id="lft-avg" style="font-size:18px; font-weight:700;">Rs 0</div>
+    </div>
+    <div style="background:#F2EFE4; border:1px solid #D9D3C0; padding: 10px 12px;">
+      <div style="font-size:11px; color:#7A6E5D;">On track for</div>
+      <div class="lft-num" id="lft-eta" style="font-size:18px; font-weight:700;">-</div>
+    </div>
+  </div>
+
+  <div id="lft-pace-note" style="font-size:13px; color:#7A6E5D; margin: -12px 0 20px;"></div>
+
+  <details id="lft-settings-wrap" style="margin-bottom: 20px; border:1px solid #D9D3C0; background:#FBF8F0;">
+    <summary style="cursor:pointer; padding: 10px 12px; font-size:13px; font-weight:600; color:#262220;">Goal settings</summary>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding: 4px 12px 14px;">
+      <label style="font-size:12px; color:#7A6E5D;">Target savings (Rs)
+        <input type="number" id="lft-goal" step="1000" style="width:100%; padding:6px 8px; border:1px solid #D9D3C0; margin-top:4px;">
+      </label>
+      <label style="font-size:12px; color:#7A6E5D;">Loan amount (Rs)
+        <input type="number" id="lft-loan" step="1000" style="width:100%; padding:6px 8px; border:1px solid #D9D3C0; margin-top:4px;">
+      </label>
+      <label style="font-size:12px; color:#7A6E5D;">Starting balance already saved (Rs)
+        <input type="number" id="lft-start" step="1000" style="width:100%; padding:6px 8px; border:1px solid #D9D3C0; margin-top:4px;">
+      </label>
+      <label style="font-size:12px; color:#7A6E5D;">Monthly target (Rs)
+        <input type="number" id="lft-monthly-target" step="1000" style="width:100%; padding:6px 8px; border:1px solid #D9D3C0; margin-top:4px;">
+      </label>
+    </div>
+  </details>
+
+  <div style="display:flex; align-items:flex-end; gap:10px; margin-bottom:6px; flex-wrap:wrap;">
+    <label style="font-size:12px; color:#7A6E5D; flex:1; min-width:130px;">Date
+      <input type="date" id="lft-entry-date" style="width:100%; padding:7px 8px; border:1px solid #262220; margin-top:4px;">
+    </label>
+    <label style="font-size:12px; color:#7A6E5D; flex:1; min-width:130px;">Amount (Rs)
+      <input type="number" id="lft-entry-amount" step="100" placeholder="500" style="width:100%; padding:7px 8px; border:1px solid #262220; margin-top:4px;">
+    </label>
+    <label style="font-size:12px; color:#7A6E5D; flex:1.4; min-width:150px;">Note (optional)
+      <input type="text" id="lft-entry-note" placeholder="daily savings, salary top-up..." style="width:100%; padding:7px 8px; border:1px solid #262220; margin-top:4px;">
+    </label>
+    <button id="lft-add-btn" style="padding:8px 16px; background:#3F6B4C; color:#F2EFE4; border:none; font-size:13px; font-weight:600; cursor:pointer; height:34px;">Add deposit</button>
+  </div>
+  <div id="lft-entry-error" style="font-size:12px; color:#A8322D; margin: 2px 0 12px; display:none;"></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin: 22px 0 4px;">
+    <div style="font-size:13px; font-weight:600;">Statement</div>
+    <div style="font-size:12px; color:#7A6E5D;" id="lft-entry-count"></div>
+  </div>
+  <div id="lft-entries-wrap"></div>
+
+  <div style="margin-top: 18px; text-align:right;">
+    <button id="lft-reset-btn" style="padding:6px 12px; background:none; border:1px solid #D9D3C0; color:#7A6E5D; font-size:12px; cursor:pointer;">Reset tracker</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var STORAGE_KEY = 'land-fund-tracker-data';
+  var defaultState = {
+    goal: 2000000,
+    loan: 2000000,
+    start: 300000,
+    monthlyTarget: 120000,
+    entries: []
+  };
+  var state = null;
+
+  function todayStr() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  function fmt(n) {
+    n = Math.round(n || 0);
+    return 'Rs ' + n.toLocaleString('en-IN');
+  }
+
+  function triangleBorder(g, flip) {
+    var svgns = "http://www.w3.org/2000/svg";
+    var colors = ['#A8322D', '#D9A404', '#2B4570', '#3F6B4C'];
+    var w = 20, h = 12;
+    for (var i = 0; i * w < 680; i++) {
+      var x = i * w;
+      var color = colors[i % colors.length];
+      var tri = document.createElementNS(svgns, 'polygon');
+      var pts = flip ? (x + ',0 ' + (x + w) + ',0 ' + (x + w / 2) + ',' + h)
+                     : (x + ',' + h + ' ' + (x + w) + ',' + h + ' ' + (x + w / 2) + ',0');
+      tri.setAttribute('points', pts);
+      tri.setAttribute('fill', color);
+      tri.setAttribute('opacity', '0.85');
+      g.appendChild(tri);
+    }
+  }
+
+  function migrateEntry(e) {
+    if (e.date) return e;
+    var date = e.month ? (e.month + '-01') : todayStr();
+    return { id: e.id || (date + '-' + Math.random()), date: date, amount: e.amount, note: e.note || '' };
+  }
+
+  function monthKey(dateStr) {
+    return dateStr.slice(0, 7);
+  }
+
+  function render() {
+    document.getElementById('lft-goal').value = state.goal;
+    document.getElementById('lft-loan').value = state.loan;
+    document.getElementById('lft-start').value = state.start;
+    document.getElementById('lft-monthly-target').value = state.monthlyTarget;
+
+    var totalEntries = state.entries.reduce(function(s, e) { return s + e.amount; }, 0);
+    var totalSaved = state.start + totalEntries;
+    var pct = state.goal > 0 ? Math.min(100, (totalSaved / state.goal) * 100) : 0;
+    var remaining = Math.max(0, state.goal - totalSaved);
+
+    document.getElementById('lft-saved-total').textContent = fmt(totalSaved);
+    document.getElementById('lft-pct').textContent = Math.round(pct) + '%';
+    document.getElementById('lft-remaining').textContent = fmt(remaining);
+    document.getElementById('lft-savings-fill').style.width = pct + '%';
+
+    var totalLand = state.goal + state.loan;
+    var savingsZonePct = totalLand > 0 ? (state.goal / totalLand) * 100 : 50;
+    var loanZonePct = 100 - savingsZonePct;
+    document.getElementById('lft-savings-zone').style.width = savingsZonePct + '%';
+    document.getElementById('lft-loan-zone').style.width = loanZonePct + '%';
+    document.getElementById('lft-loan-zone').style.left = savingsZonePct + '%';
+
+    var byMonth = {};
+    state.entries.forEach(function(e) {
+      var k = monthKey(e.date);
+      byMonth[k] = (byMonth[k] || 0) + e.amount;
+    });
+    var monthKeys = Object.keys(byMonth);
+    var avg = monthKeys.length > 0 ? totalEntries / monthKeys.length : 0;
+    document.getElementById('lft-avg').textContent = avg > 0 ? fmt(avg) : '-';
+
+    var etaEl = document.getElementById('lft-eta');
+    var noteEl = document.getElementById('lft-pace-note');
+    if (remaining <= 0) {
+      etaEl.textContent = 'Goal reached';
+      noteEl.textContent = 'You have hit your savings target. Time to talk to the bank about the loan portion.';
+    } else if (avg > 0) {
+      var monthsLeft = Math.ceil(remaining / avg);
+      var d = new Date();
+      d.setMonth(d.getMonth() + monthsLeft);
+      var monthName = d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+      etaEl.textContent = monthName;
+      if (avg >= state.monthlyTarget) {
+        noteEl.textContent = 'You are saving at or above your ' + fmt(state.monthlyTarget) + '/month target. Keep this pace.';
+      } else {
+        noteEl.textContent = 'Your average is below the ' + fmt(state.monthlyTarget) + '/month target, so this date will slip further behind schedule.';
+      }
+    } else {
+      var monthsAtTarget = state.monthlyTarget > 0 ? Math.ceil(remaining / state.monthlyTarget) : 0;
+      var d2 = new Date();
+      d2.setMonth(d2.getMonth() + monthsAtTarget);
+      etaEl.textContent = monthsAtTarget > 0 ? d2.toLocaleString('en-US', { month: 'short', year: 'numeric' }) : '-';
+      noteEl.textContent = 'Log your first deposit to start tracking your actual pace.';
+    }
+
+    document.getElementById('lft-entry-count').textContent =
+      state.entries.length + (state.entries.length === 1 ? ' deposit' : ' deposits');
+
+    var wrap = document.getElementById('lft-entries-wrap');
+    wrap.innerHTML = '';
+    if (state.entries.length === 0) {
+      var empty = document.createElement('div');
+      empty.style.cssText = 'font-size:13px; color:#7A6E5D; padding: 14px 0; border-top:1px solid #D9D3C0;';
+      empty.textContent = 'No deposits logged yet. Add your first one above.';
+      wrap.appendChild(empty);
+      return;
+    }
+
+    var sorted = state.entries.slice().sort(function(a, b) { return b.date.localeCompare(a.date) || (b.id > a.id ? 1 : -1); });
+    var groups = [];
+    var groupMap = {};
+    sorted.forEach(function(e) {
+      var k = monthKey(e.date);
+      if (!groupMap[k]) {
+        groupMap[k] = { key: k, entries: [], total: 0 };
+        groups.push(groupMap[k]);
+      }
+      groupMap[k].entries.push(e);
+      groupMap[k].total += e.amount;
+    });
+
+    groups.forEach(function(group) {
+      var d3 = new Date(group.key + '-01T00:00:00');
+      var label = d3.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+      var header = document.createElement('div');
+      header.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding: 10px 0 4px; margin-top: 6px; border-top:1px solid #262220; font-size:12px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase; color:#262220;';
+      var hLeft = document.createElement('span');
+      hLeft.textContent = label;
+      var hRight = document.createElement('span');
+      hRight.className = 'lft-num';
+      hRight.textContent = fmt(group.total);
+      header.appendChild(hLeft);
+      header.appendChild(hRight);
+      wrap.appendChild(header);
+
+      group.entries.forEach(function(entry) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding: 7px 0; border-top:1px solid #EFE9D8; font-size:13px;';
+        var dEntry = new Date(entry.date + 'T00:00:00');
+        var dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
+
+        var left = document.createElement('span');
+        left.style.cssText = 'color:#262220; display:flex; gap:8px; align-items:baseline;';
+        var dateSpan = document.createElement('span');
+        dateSpan.className = 'lft-num';
+        dateSpan.style.cssText = 'color:#7A6E5D; font-size:12px; min-width:52px;';
+        dateSpan.textContent = dayLabel;
+        left.appendChild(dateSpan);
+        if (entry.note) {
+          var noteSpan = document.createElement('span');
+          noteSpan.style.color = '#7A6E5D';
+          noteSpan.textContent = entry.note;
+          left.appendChild(noteSpan);
+        }
+
+        var right = document.createElement('span');
+        right.style.cssText = 'display:flex; align-items:center; gap:10px;';
+        var amt = document.createElement('span');
+        amt.className = 'lft-num';
+        amt.style.fontWeight = '600';
+        amt.textContent = fmt(entry.amount);
+        var del = document.createElement('button');
+        del.setAttribute('aria-label', 'Remove deposit of ' + fmt(entry.amount) + ' on ' + dayLabel);
+        del.style.cssText = 'background:none; border:none; color:#A8322D; cursor:pointer; font-size:12px; padding:2px 6px;';
+        del.textContent = 'Remove';
+        del.addEventListener('click', function() {
+          state.entries = state.entries.filter(function(e) { return e.id !== entry.id; });
+          save();
+          render();
+        });
+        right.appendChild(amt);
+        right.appendChild(del);
+        row.appendChild(left);
+        row.appendChild(right);
+        wrap.appendChild(row);
+      });
+    });
+  }
+
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      state = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultState));
+    } catch (err) {
+      state = JSON.parse(JSON.stringify(defaultState));
+    }
+    state.entries = (state.entries || []).map(migrateEntry);
+    document.getElementById('lft-entry-date').value = todayStr();
+    render();
+  }
+
+  function save() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      console.error('Could not save tracker data', err);
+    }
+  }
+
+  var svgTop = document.getElementById('lft-border-top');
+  var svgBottom = document.getElementById('lft-border-bottom');
+  triangleBorder(svgTop, false);
+  triangleBorder(svgBottom, true);
+
+  ['lft-goal', 'lft-loan', 'lft-start', 'lft-monthly-target'].forEach(function(id) {
+    document.getElementById(id).addEventListener('change', function() {
+      state.goal = parseFloat(document.getElementById('lft-goal').value) || 0;
+      state.loan = parseFloat(document.getElementById('lft-loan').value) || 0;
+      state.start = parseFloat(document.getElementById('lft-start').value) || 0;
+      state.monthlyTarget = parseFloat(document.getElementById('lft-monthly-target').value) || 0;
+      save();
+      render();
+    });
+  });
+
+  document.getElementById('lft-add-btn').addEventListener('click', function() {
+    var dateInput = document.getElementById('lft-entry-date');
+    var amountInput = document.getElementById('lft-entry-amount');
+    var noteInput = document.getElementById('lft-entry-note');
+    var errorEl = document.getElementById('lft-entry-error');
+    var date = dateInput.value || todayStr();
+    var amount = parseFloat(amountInput.value);
+
+    if (!amount || amount <= 0) {
+      errorEl.textContent = 'Enter an amount greater than zero.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    errorEl.style.display = 'none';
+
+    state.entries.push({
+      id: date + '-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      date: date,
+      amount: amount,
+      note: (noteInput.value || '').trim()
+    });
+    amountInput.value = '';
+    noteInput.value = '';
+    dateInput.value = todayStr();
+    amountInput.focus();
+    save();
+    render();
+  });
+
+  [document.getElementById('lft-entry-date'), document.getElementById('lft-entry-amount')].forEach(function(el) {
+    el.addEventListener('input', function() {
+      document.getElementById('lft-entry-error').style.display = 'none';
+    });
+  });
+
+  document.getElementById('lft-reset-btn').addEventListener('click', function() {
+    state = JSON.parse(JSON.stringify(defaultState));
+    document.getElementById('lft-entry-date').value = todayStr();
+    save();
+    render();
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
