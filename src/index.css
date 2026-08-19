@@ -4,7 +4,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #FBF8F0;
+    background: #FAEBD7;
 }
 
 /* ── Auth bar ─────────────────────────────────────────── */
@@ -41,7 +41,7 @@ body {
     height: 28px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1.5px solid #7A6E5D;
+    border: 1.5px solid #564D40;
 }
 
 #lft-user-name {
@@ -84,7 +84,9 @@ body {
     transition: background 0.15s;
 }
 
-#lft-signin-btn:hover { background: #EFE9D8; }
+#lft-signin-btn:hover {
+    background: #EFE9D8;
+}
 
 #lft-signout-btn {
     padding: 5px 12px;
@@ -93,12 +95,15 @@ body {
     border-radius: 2px;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 12px;
-    color: #7A6E5D;
+    color: #564D40;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
 }
 
-#lft-signout-btn:hover { border-color: #A8322D; color: #A8322D; }
+#lft-signout-btn:hover {
+    border-color: #A8322D;
+    color: #A8322D;
+}
 
 /* ── Loading overlay ──────────────────────────────────── */
 #lft-loading-overlay {
@@ -125,11 +130,15 @@ body {
 
 #lft-loading-overlay p {
     font-size: 13px;
-    color: #7A6E5D;
+    color: #564D40;
     margin: 0;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 /* ── Viewer read-only notice ──────────────────────────── */
 #lft-viewer-notice {
@@ -139,7 +148,7 @@ body {
     padding: 8px 14px;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 12px;
-    color: #7A6E5D;
+    color: #564D40;
     margin-bottom: 16px;
 }
 
@@ -159,8 +168,12 @@ body {
 
 #lft-signin-prompt p {
     font-size: 13px;
-    color: #7A6E5D;
+    color: #564D40;
     margin: 0 0 24px;
+}
+
+#lft-signin-prompt div {
+    color: #564D40;
 }
 
 #lft-signin-prompt-btn {
@@ -171,6 +184,7 @@ body {
     background: #262220;
     color: #EFE9D8;
     border: none;
+    border-radius: 3px;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -178,7 +192,9 @@ body {
     transition: background 0.15s;
 }
 
-#lft-signin-prompt-btn:hover { background: #3F6B4C; }
+#lft-signin-prompt-btn:hover {
+    background: #3F6B4C;
+}
 
 /* ── Main content ─────────────────────────────────────── */
 .lft-root {
@@ -212,7 +228,7 @@ button:disabled {
 /* Sync status */
 #lft-sync-status {
     font-size: 11px;
-    color: #7A6E5D;
+    color: #564D40;
     font-family: 'IBM Plex Sans', sans-serif;
     display: flex;
     align-items: center;
@@ -237,6 +253,13 @@ button:disabled {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
 }
