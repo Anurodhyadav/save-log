@@ -55,7 +55,7 @@ export const Layout = () => {
       {isMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/20 z-10" onClick={closeMenu}></div>
-          <div className="absolute right-2 top-12 w-48 bg-[#FBF8F0] border border-[#D9D3C0] shadow-lg rounded z-20 overflow-hidden">
+          <div className="absolute right-2 top-12 flex flex-col justify-center gap-3  w-46 bg-[#FBF8F0] border border-[#D9D3C0] shadow-lg rounded z-20 overflow-hidden">
             <Link to="/" onClick={closeMenu} className="block px-4 py-3 text-sm text-[#262220] border-b border-[#D9D3C0] hover:bg-[#F2EFE4]">Home</Link>
             <Link to="/goal-settings" onClick={closeMenu} className="block px-4 py-3 text-sm text-[#262220] border-b border-[#D9D3C0] hover:bg-[#F2EFE4]">Goal Settings</Link>
             <Link to="/add-transaction" onClick={closeMenu} className="block px-4 py-3 text-sm text-[#262220] border-b border-[#D9D3C0] hover:bg-[#F2EFE4]">Add Transaction</Link>
@@ -76,7 +76,7 @@ export const Layout = () => {
         </div>
       </div>
 
-      <footer className="bg-[#262220] text-[#EFE9D8] min-h-[46px] py-5 text-center text-xs mt-auto">
+      <footer className="bg-[#262220] text-[#EFE9D8] min-h-[46px] py-4 text-center text-xs mt-auto">
         @2026 and all right reserved
       </footer>
     </div>

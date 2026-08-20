@@ -54,9 +54,9 @@ export const Statement = () => {
 
   return (
     <div className="mt-4">
-      <div className="flex justify-between items-baseline mb-6">
+      <div className="flex justify-between items-end mb-6">
         <div className="flex items-center gap-3">
-          <Link to="/" className="text-[#7A6E5D] hover:text-[#262220] transition-colors p-1" aria-label="Back to home">
+          <Link to="/" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to home">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           </Link>
           <h2 className="text-xl font-semibold mb-0">Statement</h2>
@@ -69,7 +69,7 @@ export const Statement = () => {
       <div id="lft-entries-wrap" className="pb-8">
         {entries.length === 0 ? (
           <div className="text-sm text-[#7A6E5D] py-3.5">
-            No deposits logged yet.
+            No deposit.
           </div>
         ) : (
           getGroupedEntries().map((group) => {
@@ -88,8 +88,8 @@ export const Statement = () => {
                   const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
 
                   return (
-                    <div key={entry.id} className="flex justify-between items-center py-3 border-b border-[#EFE9D8] text-sm md:text-base">
-                      <span className="text-[#262220] flex gap-3 items-baseline">
+                    <div key={entry.id} className="flex justify-between items-center py-3 border-b border-[#3F6B4C] text-sm md:text-base">
+                      <span className="text-[#262220] flex gap-3 items-end">
                         <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
                         {entry.note && <span className="text-[#7A6E5D] text-sm">{entry.note}</span>}
                       </span>
