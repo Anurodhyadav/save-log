@@ -4,6 +4,7 @@ import { useAppContext } from '../context/AppContext';
 
 export const Home = () => {
   const { settings, entries } = useAppContext();
+  const { isAdmin } = useAppContext();
 
   // Helper formats
   const fmt = (n) => {
@@ -152,27 +153,31 @@ export const Home = () => {
         *{paceNoteText}
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-5 mt-6">
-        <Link
-          to="/add-transaction"
-          className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
-        >
-          Add Transaction
-        </Link>
-        <Link
-          to="/statement"
-          className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
-        >
-          View Statement
-        </Link>
-        <Link
-          to="/goal-settings"
-          className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
-        >
-          Goal Settings
-        </Link>
-      </div>
+      {
+        isAdmin && (
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-5 mt-6">
+            <Link
+              to="/add-transaction"
+              className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
+            >
+              Add Transaction
+            </Link>
+            <Link
+              to="/statement"
+              className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
+            >
+              View Statement
+            </Link>
+            <Link
+              to="/goal-settings"
+              className="px-6 py-3 bg-[#F2EFE4] border border-[#D9D3C0] text-[#262220] rounded shadow-sm hover:bg-[#3F6B4C] hover:text-white transition-colors font-semibold text-center w-full"
+            >
+              Goal Settings
+            </Link>
+          </div>
 
+        )
+      }
     </>
   );
 };

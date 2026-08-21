@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { Layout } from './components/Layout';
+import { AdminRoute } from './components/AdminRoute';
 import { Home } from './pages/Home';
 import { GoalSettings } from './pages/GoalSettings';
 import { AddTransaction } from './pages/AddTransaction';
@@ -14,9 +15,30 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="goal-settings" element={<GoalSettings />} />
-            <Route path="add-transaction" element={<AddTransaction />} />
-            <Route path="statement" element={<Statement />} />
+            <Route
+              path="goal-settings"
+              element={
+                <AdminRoute>
+                  <GoalSettings />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="add-transaction"
+              element={
+                <AdminRoute>
+                  <AddTransaction />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="statement"
+              element={
+                <AdminRoute>
+                  <Statement />
+                </AdminRoute>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
