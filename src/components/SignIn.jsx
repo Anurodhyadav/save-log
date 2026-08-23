@@ -23,7 +23,7 @@ export const SignIn = () => {
         `transition-all duration-500 ease-out ${delay} ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`;
 
     return (
-        <div className="h-screen w-full flex items-center justify-center  md:p-10">
+        <div className="h-screen h-dvh w-full flex items-center justify-center  md:p-10">
             <div className="w-full max-w-[30rem] h-full md:h-auto md:min-h-[640px] bg-[#f4eeda] flex flex-col overflow-hidden relative md:rounded-2xl md:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55),0_0_0_1px_rgba(184,146,74,0.25)]">
 
                 <div className="relative bg-gradient-to-br from-[#3F6B4C]  to-[#17342c] px-7 pt-6 pb-5 border-b-[3px] border-double border-[#b8924a]">

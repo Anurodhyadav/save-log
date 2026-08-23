@@ -3,6 +3,7 @@ import { addDoc, serverTimestamp } from 'firebase/firestore';
 import { depositsRef, auth } from '../firebase';
 import { useAppContext } from '../context/AppContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { Toast } from '../components/Toast';
 
 export const AddTransaction = () => {
   const { isAdmin, setSyncState } = useAppContext();
@@ -11,6 +12,11 @@ export const AddTransaction = () => {
   const [note, setNote] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
+  const [toast, setToast] = useState(null);
+
+  const showToast = (type, message) => {
+    setToast({ key: Date.now(), type, message });
+  };
 
   const amountInputRef = useRef(null);
 
@@ -44,13 +50,17 @@ export const AddTransaction = () => {
       createdBy: auth.currentUser ? auth.currentUser.uid : null
     })
       .then(() => {
+        showToast('success', 'Transaction added successfully!');
         setSyncState('synced');
         setAmount('');
         setNote('');
         setDate(getTodayStr());
-        navigate('/');
+        setTimeout(() => {
+          navigate('/');
+        }, 2500)
       })
       .catch((err) => {
+        showToast('error', 'Transaction addition failed!');
         console.error('Add Transaction error', err);
         setSyncState('error');
       });
@@ -114,6 +124,14 @@ export const AddTransaction = () => {
           Add Transaction
         </button>
       </form>
+      {toast && (
+        <Toast
+          key={toast.key}
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

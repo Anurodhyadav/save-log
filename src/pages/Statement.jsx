@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { depositsRef } from '../firebase';
 import { useAppContext } from '../context/AppContext';
+import { Toast } from '../components/Toast';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export const Statement = () => {
   const { entries, isAdmin, setSyncState } = useAppContext();
   const location = useLocation();
   const isChartView = location.pathname === '/statement-chart';
+
+  const [pendingDelete, setPendingDelete] = useState(null); // entry object awaiting confirmation
+  const [toast, setToast] = useState(null); // { key, type, message }
 
   const fmt = (n) => {
     n = Math.round(n || 0);
@@ -16,14 +21,34 @@ export const Statement = () => {
 
   const monthKey = (dateStr) => dateStr.slice(0, 7);
 
-  const handleRemoveDeposit = (id) => {
+  const showToast = (type, message) => {
+    setToast({ key: Date.now(), type, message });
+  };
+
+  const handleRemoveDeposit = (entry) => {
     if (!isAdmin) return;
+    setPendingDelete(entry);
+  };
+
+  const cancelRemoveDeposit = () => {
+    setPendingDelete(null);
+  };
+
+  const confirmRemoveDeposit = () => {
+    if (!pendingDelete) return;
+    const entry = pendingDelete;
+    setPendingDelete(null);
+
     setSyncState('syncing');
-    deleteDoc(doc(depositsRef, id))
-      .then(() => setSyncState('synced'))
+    deleteDoc(doc(depositsRef, entry.id))
+      .then(() => {
+        setSyncState('synced');
+        showToast('success', 'Entry removed successfully!');
+      })
       .catch((err) => {
         console.error('Remove deposit error', err);
         setSyncState('error');
+        showToast('error', 'Failed to remove entry. Please try again.');
       });
   };
 
@@ -83,7 +108,7 @@ export const Statement = () => {
           <div
             role="tablist"
             aria-label="Statement view"
-            className="flex items-center bg-[#3F6B4C] rounded-full p-1 text-xs font-bold tracking-wider uppercase"
+            className="flex items-center bg-[#3F6B4C] rounded-2xl p-1 text-xs font-bold tracking-wider uppercase"
           >
             <Link
               to="/statement"
@@ -140,8 +165,8 @@ export const Statement = () => {
                         <span className="lft-num font-mono font-semibold">{fmt(entry.amount)}</span>
                         {isAdmin && (
                           <button
-                            onClick={() => handleRemoveDeposit(entry.id)}
-                            className="bg-none border-none text-[#A8322D] cursor-pointer text-xs px-2 py-1 hover:underline"
+                            onClick={() => handleRemoveDeposit(entry)}
+                            className="bg-none underline border-none text-[#A8322D] cursor-pointer text-xs px-2 py-1 hover:underline"
                           >
                             Remove
                           </button>
@@ -155,6 +180,31 @@ export const Statement = () => {
           })
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!pendingDelete}
+        title="Remove this entry?"
+        message={
+          pendingDelete
+            ? `This will permanently remove the ${pendingDelete.amount < 0 ? 'withdrawal' : 'deposit'} of ${fmt(Math.abs(pendingDelete.amount))}${pendingDelete.note ? ` (${pendingDelete.note})` : ''} dated ${new Date(pendingDelete.date + 'T00:00:00').toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}. This can't be undone.`
+            : ''
+        }
+        confirmLabel="Remove"
+        cancelLabel="Cancel"
+        danger
+        onConfirm={confirmRemoveDeposit}
+        onCancel={cancelRemoveDeposit}
+      />
+
+      {toast && (
+        <Toast
+          key={toast.key}
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+          fixed
+        />
+      )}
     </div>
   );
 };
