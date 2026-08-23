@@ -26,7 +26,14 @@ export const Statement = () => {
   };
 
   const getGroupedEntries = () => {
-    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+    const getTime = (e) => {
+      if (!e.createdAt) return 0;
+      const secs = e.createdAt.seconds ?? 0;
+      const nanos = e.createdAt.nanoseconds ?? 0;
+      return secs * 1000 + nanos / 1e6;
+    };
+
+    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || getTime(b) - getTime(a)); 
     const groups = [];
     const groupMap = {};
 
@@ -39,6 +46,7 @@ export const Statement = () => {
       groupMap[k].entries.push(e);
       groupMap[k].total += e.amount;
     });
+    console.log("THE GROUPS", groups)
     return groups;
   };
 
