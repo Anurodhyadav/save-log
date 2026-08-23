@@ -48,8 +48,7 @@ export const AddTransaction = () => {
         setAmount('');
         setNote('');
         setDate(getTodayStr());
-        // Navigate back to statement or home after adding
-        navigate('/statement');
+        navigate('/');
       })
       .catch((err) => {
         console.error('Add Transaction error', err);
@@ -65,7 +64,7 @@ export const AddTransaction = () => {
         </Link>
         <h2 className="text-xl font-semibold mb-0">Add Transaction</h2>
       </div>
-      
+
       <form onSubmit={handleAddDeposit} className="flex flex-col gap-5 px-1 pb-3">
         <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Date
           <input
@@ -76,7 +75,7 @@ export const AddTransaction = () => {
             className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white appearance-none"
           />
         </label>
-        
+
         <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Amount (Rs)
           <input
             type="number"
@@ -89,7 +88,7 @@ export const AddTransaction = () => {
             className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
           />
         </label>
-        
+
         <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Note (optional)
           <input
             type="text"
@@ -100,7 +99,7 @@ export const AddTransaction = () => {
             className="w-full text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
           />
         </label>
-        
+
         {errorMsg && (
           <div id="lft-entry-error" className="text-sm text-[#A8322D] my-1">
             {errorMsg}

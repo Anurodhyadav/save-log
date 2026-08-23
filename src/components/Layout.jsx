@@ -8,7 +8,6 @@ import { Loader } from './Loader';
 
 export const Layout = () => {
   const { user, isAdmin, loading, syncState } = useAppContext();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut(auth);

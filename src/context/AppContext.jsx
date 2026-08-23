@@ -25,7 +25,7 @@ export const defaultSettings = {
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [syncState, setSyncState] = useState('synced'); // 'synced' | 'syncing' | 'error'
   const [settings, setSettings] = useState(defaultSettings);
@@ -36,7 +36,6 @@ export const AppProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
-        setIsAdmin(false);
         setEntries([]);
         setLoading(false);
         return;
@@ -55,14 +54,13 @@ export const AppProvider = ({ children }) => {
         const snap = await getDoc(userDocRef);
         setIsAdmin(snap.exists() && snap.data().admin === true);
       } catch (err) {
-        console.warn('Could not read user profile (defaulting to viewer):', err);
-        setIsAdmin(false);
+        console.warn('Could not read user profile:', err);
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;

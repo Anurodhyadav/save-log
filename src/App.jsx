@@ -7,6 +7,7 @@ import { Home } from './pages/Home';
 import { GoalSettings } from './pages/GoalSettings';
 import { AddTransaction } from './pages/AddTransaction';
 import { Statement } from './pages/Statement';
+import { StatementChart } from './pages/StatementChart';
 
 export default function App() {
   return (
@@ -36,6 +37,14 @@ export default function App() {
               element={
                 <AdminRoute>
                   <Statement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="statement-chart"
+              element={
+                <AdminRoute>
+                  <StatementChart />
                 </AdminRoute>
               }
             />

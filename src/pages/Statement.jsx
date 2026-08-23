@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { depositsRef } from '../firebase';
 import { useAppContext } from '../context/AppContext';
 
 export const Statement = () => {
   const { entries, isAdmin, setSyncState } = useAppContext();
+  const location = useLocation();
+  const isChartView = location.pathname === '/statement-chart';
 
   const fmt = (n) => {
     n = Math.round(n || 0);
@@ -33,7 +35,7 @@ export const Statement = () => {
       return secs * 1000 + nanos / 1e6;
     };
 
-    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || getTime(b) - getTime(a)); 
+    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || getTime(b) - getTime(a));
     const groups = [];
     const groupMap = {};
 
@@ -50,14 +52,24 @@ export const Statement = () => {
     return groups;
   };
 
-  const calculateEntriesCount = () => {
+  const renderEntriesCount = () => {
     const deposits = entries.filter((e) => e.amount > 0).length;
     const withdrawals = entries.filter((e) => e.amount < 0).length;
 
-    if (deposits === 0 && withdrawals === 0) return '0 transactions';
-    if (withdrawals === 0) return `${deposits} ${deposits === 1 ? 'deposit' : 'deposits'}`;
-    if (deposits === 0) return `${withdrawals} ${withdrawals === 1 ? 'withdrawal' : 'withdrawals'}`;
-    return `${deposits} ${deposits === 1 ? 'deposit' : 'deposits'}, ${withdrawals} ${withdrawals === 1 ? 'withdrawal' : 'withdrawals'}`;
+    if (deposits === 0 && withdrawals === 0) {
+      return <span>0 transactions</span>;
+    }
+
+    return (
+      <div className="flex flex-col items-end leading-tight">
+        {deposits > 0 && (
+          <span>{deposits} {deposits === 1 ? 'deposit' : 'deposits'}</span>
+        )}
+        {withdrawals > 0 && (
+          <span>{withdrawals} {withdrawals === 1 ? 'withdrawal' : 'withdrawals'}</span>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -67,10 +79,33 @@ export const Statement = () => {
           <Link to="/" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to home">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           </Link>
-          <h2 className="text-xl font-semibold mb-0">Statement</h2>
+
+          <div
+            role="tablist"
+            aria-label="Statement view"
+            className="flex items-center bg-[#3F6B4C] rounded-full p-1 text-xs font-bold tracking-wider uppercase"
+          >
+            <Link
+              to="/statement"
+              role="tab"
+              aria-selected={!isChartView}
+              className={`px-3 py-1.5 rounded-full transition-colors ${!isChartView ? 'bg-[#262220] text-white' : 'text-[#7A6E5D] hover:text-[#262220]'
+                }`}
+            >
+              List
+            </Link>
+            <Link
+              to="/statement-chart"
+              role="tab"
+              aria-selected={isChartView}
+              className={`px-3 py-1.5 rounded-full text-white transition-colors hover:text-[#262220] hover:bg-[#f4eeda]`}
+            >
+              Report
+            </Link>
+          </div>
         </div>
-        <div className="text-sm text-[#7A6E5D]">
-          {calculateEntriesCount()}
+        <div className="text-sm text-[#7A6E5D] text-right">
+          {renderEntriesCount()}
         </div>
       </div>
 
