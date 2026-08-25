@@ -146,9 +146,9 @@ export const Statement = () => {
 
             return (
               <div key={group.key} className="mb-6">
-                <div className="flex justify-between items-center py-2.5 mt-1 border-b-2 border-[#262220] text-sm font-bold tracking-wider uppercase text-[#262220]">
+                <div className="flex justify-between items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider uppercase text-[#262220]">
                   <span>{label}</span>
-                  <span className="lft-num font-mono">{fmt(group.total)}</span>
+                  <span className="lft-num font-semibold font-mono">{fmt(group.total)}</span>
                 </div>
 
                 {group.entries.map((entry) => {
@@ -156,13 +156,13 @@ export const Statement = () => {
                   const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
 
                   return (
-                    <div key={entry.id} className="flex justify-between items-center py-3 border-b border-[#3F6B4C] text-sm md:text-base">
+                    <div key={entry.id} className="flex justify-between items-center py-2 border-b border-[#3F6B4C] text-sm">
                       <span className="text-[#262220] flex gap-3 items-end">
                         <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
-                        {entry.note && <span className="text-[#7A6E5D] text-sm">{entry.note}</span>}
+                        {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
                       </span>
                       <span className="flex items-center gap-3">
-                        <span className="lft-num font-mono font-semibold">{fmt(entry.amount)}</span>
+                        <span className="lft-num font-mono text-xs md:text-sm font-semibold">{fmt(entry.amount)}</span>
                         {isAdmin && (
                           <button
                             onClick={() => handleRemoveDeposit(entry)}

@@ -57,7 +57,7 @@ export const GoalSettings = () => {
             onChange={(e) => handleSettingChange('goal', e.target.value)}
             disabled={!isAdmin}
             step="1000"
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
+            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#D9D3C0] rounded text-[#262220] bg-white"
           />
         </label>
 
@@ -68,7 +68,7 @@ export const GoalSettings = () => {
             onChange={(e) => handleSettingChange('loan', e.target.value)}
             disabled={!isAdmin}
             step="1000"
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
+            className="w-full font-mono text-base text-[#262220] md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
           />
         </label>
 
@@ -79,7 +79,7 @@ export const GoalSettings = () => {
             onChange={(e) => handleSettingChange('start', e.target.value)}
             disabled={!isAdmin}
             step="1000"
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
+            className="w-full font-mono text-base text-[#262220] md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
           />
         </label>
 
@@ -90,7 +90,7 @@ export const GoalSettings = () => {
             onChange={(e) => handleSettingChange('monthlyTarget', e.target.value)}
             disabled={!isAdmin}
             step="1000"
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
+            className="w-full font-mono text-base text-[#262220] md:text-lg px-3 py-3 border border-[#D9D3C0] rounded bg-white"
           />
         </label>
 
