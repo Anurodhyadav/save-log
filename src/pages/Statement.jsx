@@ -120,7 +120,7 @@ export const Statement = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 46px - 46px - 64px)', marginTop: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 46px - 46px - 64px)', marginTop: '1rem' }}>
 
       <div style={{ flexShrink: 0, paddingBottom: '0.5rem' }}>
         <div className="flex justify-between items-end mb-4">

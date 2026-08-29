@@ -18,8 +18,8 @@ export const Layout = () => {
   if (!user) return <SignIn />;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div id="lft-auth-bar" className="flex items-center justify-between px-4 py-2 bg-[#262220] text-[#EFE9D8] min-h-[46px] relative z-20">
+    <div className="flex flex-col min-h-[100dvh]">
+      <div id="lft-auth-bar" className="flex items-center justify-between px-4 py-2 bg-[#262220] text-[#EFE9D8] min-h-[46px] sticky top-0 z-50">
         <span className="font-semibold tracking-wide text-sm md:text-base opacity-90 font-serif">
           <Link to="/">Saving Fund</Link>
         </span>
