@@ -11,6 +11,10 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
+    PieChart,
+    Pie,
+    Cell,
+    Sector,
 } from 'recharts';
 import { useAppContext } from '../context/AppContext';
 import { RenderAmount } from '../components/RenderAmount';
@@ -23,6 +27,51 @@ const COLORS = {
     balance: '#B08D3E',
     grid: '#DDD0BA',
     card: '#FFFDF8',
+};
+
+const TIER_COLORS = {
+    Mini: '#B08D3E',
+    Small: '#3F6B4C',
+    Standard: '#2C5282',
+    Large: '#A8322D',
+};
+
+const classifyDeposit = (amount) => {
+    if (amount >= 100000) return 'Large';
+    if (amount >= 10000) return 'Standard';
+    if (amount >= 1000) return 'Small';
+    return 'Mini';
+};
+
+/* Active slice renderer for the pie chart */
+const renderActiveShape = (props) => {
+    const {
+        cx, cy, innerRadius, outerRadius, startAngle, endAngle,
+        fill, payload, percent, value,
+    } = props;
+    const absVal = Math.abs(Math.round(value || 0));
+    const display = absVal >= 100000
+        ? 'Rs\u2009' + (absVal / 100000).toFixed(absVal % 100000 === 0 ? 0 : 1) + 'L'
+        : absVal >= 1000
+            ? 'Rs\u2009' + (absVal / 1000).toFixed(absVal % 1000 === 0 ? 0 : 1) + 'k'
+            : 'Rs\u2009' + absVal.toLocaleString('en-IN');
+    return (
+        <g>
+            <text x={cx} y={cy - 14} textAnchor="middle" fill={fill} style={{ fontSize: 15, fontWeight: 700 }}>
+                {payload.name}
+            </text>
+            <text x={cx} y={cy + 8} textAnchor="middle" fill={COLORS.text} style={{ fontSize: 13, fontWeight: 600 }}>
+                {display}
+            </text>
+            <text x={cx} y={cy + 26} textAnchor="middle" fill={COLORS.muted} style={{ fontSize: 12 }}>
+                {(percent * 100).toFixed(1)}% of deposits
+            </text>
+            <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 8}
+                startAngle={startAngle} endAngle={endAngle} fill={fill} />
+            <Sector cx={cx} cy={cy} innerRadius={outerRadius + 12} outerRadius={outerRadius + 15}
+                startAngle={startAngle} endAngle={endAngle} fill={fill} />
+        </g>
+    );
 };
 
 const fmt = (n) => {
@@ -70,7 +119,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export const StatementChart = () => {
     const { entries } = useAppContext();
-    const [view, setView] = useState('monthly'); // 'monthly' | 'weekly'
+    const [view, setView] = useState('monthly'); // 'monthly' | 'weekly' | 'pie'
+    const [activePieIndex, setActivePieIndex] = useState(0);
     const [selectedMonth, setSelectedMonth] = useState(null);
 
     const monthlyData = useMemo(() => {
@@ -114,6 +164,15 @@ export const StatementChart = () => {
         return { deposits, withdrawals, net: deposits - withdrawals };
     }, [entries, view, activeMonth]);
 
+    const pieData = useMemo(() => {
+        const tiers = { Mini: 0, Small: 0, Standard: 0, Large: 0 };
+        entries
+            .forEach((e) => { tiers[classifyDeposit(Math.abs(e.amount))] += e.amount; });
+        return Object.entries(tiers)
+            .filter(([, sum]) => sum > 0)
+            .map(([name, value]) => ({ name, value }));
+    }, [entries]);
+
     const chartData = view === 'monthly' ? monthlyData : weeklyData;
     const xKey = view === 'monthly' ? 'label' : 'key';
     const Chart = view === 'monthly' ? ComposedChart : BarChart;
@@ -122,7 +181,7 @@ export const StatementChart = () => {
         <div className="mt-4">
             <div className="flex justify-between items-end mb-6">
                 <div className="flex items-center gap-3">
-                    <Link to="/statement" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to home">
+                    <Link to="/statement" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to statement">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                     </Link>
                     <h2 className="text-xl font-semibold mb-0">Chart</h2>
@@ -135,17 +194,21 @@ export const StatementChart = () => {
             <div className="flex flex-wrap items-center gap-2 mb-5">
                 <button
                     onClick={() => setView('monthly')}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'monthly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'
-                        }`}
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'monthly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
                 >
                     Monthly
                 </button>
                 <button
                     onClick={() => setView('weekly')}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'weekly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'
-                        }`}
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'weekly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
                 >
                     Weekly
+                </button>
+                <button
+                    onClick={() => setView('pie')}
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'pie' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
+                >
+                    Pie Chart
                 </button>
 
                 {view === 'weekly' && months.length > 0 && (
@@ -184,7 +247,83 @@ export const StatementChart = () => {
                 </div>
             </div>
 
-            {chartData.length === 0 ? (
+            {view === 'pie' ? (
+                pieData.length === 0 ? (
+                    <div className="text-sm text-[#7A6E5D] py-3.5">No deposit data to display.</div>
+                ) : (
+                    <div>
+                        {/* Pie chart */}
+                        <div style={{ width: '100%', height: 320 }}>
+                            <ResponsiveContainer>
+                                <PieChart>
+                                    <Pie
+                                        activeIndex={activePieIndex}
+                                        activeShape={renderActiveShape}
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={72}
+                                        outerRadius={110}
+                                        dataKey="value"
+                                        onMouseEnter={(_, index) => setActivePieIndex(index)}
+                                    >
+                                        {pieData.map((entry) => (
+                                            <Cell key={entry.name} fill={TIER_COLORS[entry.name]} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Legend + details */}
+                        <div className="grid grid-cols-2 gap-3 mt-2">
+                            {[
+                                { name: 'Mini', label: 'Mini', range: '< Rs 1,000' },
+                                { name: 'Small', label: 'Small', range: 'Rs 1K – 9,999' },
+                                { name: 'Standard', label: 'Standard', range: 'Rs 10K – 99,999' },
+                                { name: 'Large', label: 'Large', range: '≥ Rs 1,00,000' },
+                            ].map(({ name, label, range }) => {
+                                const tier = pieData.find((d) => d.name === name);
+                                const tierSum = tier ? tier.value : 0;
+                                const totalSum = pieData.reduce((s, d) => s + d.value, 0);
+                                const pct = totalSum > 0 ? ((tierSum / totalSum) * 100).toFixed(1) : '0.0';
+                                const absVal = Math.round(tierSum);
+                                const display = absVal >= 100000
+                                    ? 'Rs ' + (absVal / 100000).toFixed(absVal % 100000 === 0 ? 0 : 1) + 'L'
+                                    : absVal >= 1000
+                                        ? 'Rs ' + (absVal / 1000).toFixed(absVal % 1000 === 0 ? 0 : 1) + 'k'
+                                        : 'Rs ' + absVal.toLocaleString('en-IN');
+                                return (
+                                    <div
+                                        key={name}
+                                        className="flex items-start gap-2.5 border border-[#DDD0BA] rounded-lg p-3 cursor-pointer"
+                                        style={{ opacity: tierSum === 0 ? 0.4 : 1 }}
+                                        onMouseEnter={() => {
+                                            const idx = pieData.findIndex((d) => d.name === name);
+                                            if (idx !== -1) setActivePieIndex(idx);
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                width: 12, height: 12, borderRadius: 3,
+                                                background: TIER_COLORS[name],
+                                                flexShrink: 0, marginTop: 2,
+                                            }}
+                                        />
+                                        <div>
+                                            <div className="text-xs font-semibold text-[#262220]">{label}</div>
+                                            <div className="text-[10px] text-[#7A6E5D]">{range}</div>
+                                            <div className="text-xs font-mono mt-0.5" style={{ color: TIER_COLORS[name] }}>
+                                                {tierSum > 0 ? <>{display} &middot; {pct}%</> : '—'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )
+            ) : chartData.length === 0 ? (
                 <div className="text-sm text-[#7A6E5D] py-3.5">No data to chart.</div>
             ) : (
                 <div style={{ width: '100%', height: 340 }}>
