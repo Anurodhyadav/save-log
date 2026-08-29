@@ -1,10 +1,19 @@
 @import "tailwindcss";
 
-/* Copying CSS design tokens and custom structures from original app */
 body {
     margin: 0;
     padding: 0;
     background: #FAEBD7;
+}
+
+
+#lft-entries-wrap {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#lft-entries-wrap::-webkit-scrollbar {
+    display: none;
 }
 
 /* ── Auth bar ─────────────────────────────────────────── */

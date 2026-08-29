@@ -13,6 +13,7 @@ import {
     Legend,
 } from 'recharts';
 import { useAppContext } from '../context/AppContext';
+import { RenderAmount } from '../components/RenderAmount';
 
 const COLORS = {
     text: '#262220',
@@ -165,15 +166,21 @@ export const StatementChart = () => {
             <div className="grid grid-cols-3 gap-3 mb-6">
                 <div className="border border-[#DDD0BA] rounded-lg p-3">
                     <div className="text-xs text-[#7A6E5D] uppercase tracking-wide mb-1">Deposits</div>
-                    <div className="text-xs  md:text-lg font-semibold text-[#3F6B4C] font-mono">{fmt(totals.deposits)}</div>
+                    <div className="text-xs  md:text-lg font-semibold text-[#3F6B4C] font-mono">
+                        <RenderAmount amount={totals.deposits} />
+                    </div>
                 </div>
                 <div className="border border-[#DDD0BA] rounded-lg p-3">
                     <div className="text-xs text-[#7A6E5D] uppercase tracking-wide mb-1">Withdrawals</div>
-                    <div className="text-xs  md:text-lg font-semibold text-[#A8322D] font-mono">{fmt(totals.withdrawals)}</div>
+                    <div className="text-xs  md:text-lg font-semibold text-[#A8322D] font-mono">
+                        <RenderAmount amount={totals.withdrawals} />
+                    </div>
                 </div>
                 <div className="border border-[#DDD0BA] rounded-lg p-3">
                     <div className="text-xs text-[#7A6E5D] uppercase tracking-wide mb-1">Net</div>
-                    <div className="text-xs md:text-lg font-semibold text-[#262220] font-mono">{fmt(totals.net)}</div>
+                    <div className="text-xs md:text-lg font-semibold text-[#262220] font-mono">
+                        <RenderAmount amount={totals.net} />
+                    </div>
                 </div>
             </div>
 

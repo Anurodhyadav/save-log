@@ -5,6 +5,31 @@ import { depositsRef } from '../firebase';
 import { useAppContext } from '../context/AppContext';
 import { Toast } from '../components/Toast';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { RenderAmount } from '../components/RenderAmount';
+
+const DownArrow = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'inline-block', flexShrink: 0 }} aria-hidden="true">
+    <polygon points="5,10 0,0 10,0" fill="#C0392B" />
+  </svg>
+);
+
+
+const UpArrow = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" style={{ display: 'inline-block', flexShrink: 0 }} aria-hidden="true">
+    <polygon points="5,0 10,10 0,10" fill="#27AE60" />
+  </svg>
+);
+
+
+const TrashIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+  </svg>
+);
 
 export const Statement = () => {
   const { entries, isAdmin, setSyncState } = useAppContext();
@@ -14,10 +39,8 @@ export const Statement = () => {
   const [pendingDelete, setPendingDelete] = useState(null); // entry object awaiting confirmation
   const [toast, setToast] = useState(null); // { key, type, message }
 
-  const fmt = (n) => {
-    n = Math.round(n || 0);
-    return 'Rs ' + n.toLocaleString('en-IN');
-  };
+
+  const fmt = (n) => 'Rs\u2009' + fmtNum(n);
 
   const monthKey = (dateStr) => dateStr.slice(0, 7);
 
@@ -73,7 +96,6 @@ export const Statement = () => {
       groupMap[k].entries.push(e);
       groupMap[k].total += e.amount;
     });
-    console.log("THE GROUPS", groups)
     return groups;
   };
 
@@ -98,43 +120,45 @@ export const Statement = () => {
   };
 
   return (
-    <div className="mt-4">
-      <div className="flex justify-between items-end mb-6">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to home">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          </Link>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 46px - 46px - 64px)', marginTop: '1rem' }}>
 
-          <div
-            role="tablist"
-            aria-label="Statement view"
-            className="flex items-center bg-[#3F6B4C] rounded-2xl p-1 text-xs font-bold tracking-wider uppercase"
-          >
-            <Link
-              to="/statement"
-              role="tab"
-              aria-selected={!isChartView}
-              className={`px-3 py-1.5 rounded-full transition-colors ${!isChartView ? 'bg-[#262220] text-white' : 'text-[#7A6E5D] hover:text-[#262220]'
-                }`}
-            >
-              List
+      <div style={{ flexShrink: 0, paddingBottom: '0.5rem' }}>
+        <div className="flex justify-between items-end mb-4">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="text-[#7A6E5D] hover:text-[#262220] transition-colors" aria-label="Back to home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             </Link>
-            <Link
-              to="/statement-chart"
-              role="tab"
-              aria-selected={isChartView}
-              className={`px-3 py-1.5 rounded-full text-white transition-colors hover:text-[#262220] hover:bg-[#f4eeda]`}
+
+            <div
+              role="tablist"
+              aria-label="Statement view"
+              className="flex items-center bg-[#3F6B4C] rounded-2xl p-1 text-xs font-bold tracking-wider uppercase"
             >
-              Report
-            </Link>
+              <Link
+                to="/statement"
+                role="tab"
+                aria-selected={!isChartView}
+                className={`px-3 py-1.5 rounded-full transition-colors ${!isChartView ? 'bg-[#262220] text-white' : 'text-[#7A6E5D] hover:text-[#262220]'}`}
+              >
+                List
+              </Link>
+              <Link
+                to="/statement-chart"
+                role="tab"
+                aria-selected={isChartView}
+                className="px-3 py-1.5 rounded-full text-white transition-colors hover:text-[#262220] hover:bg-[#f4eeda]"
+              >
+                Report
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="text-sm text-[#7A6E5D] text-right">
-          {renderEntriesCount()}
+          <div className="text-sm text-[#7A6E5D] text-right">
+            {renderEntriesCount()}
+          </div>
         </div>
       </div>
 
-      <div id="lft-entries-wrap" className="pb-8">
+      <div id="lft-entries-wrap" style={{ flex: 1, overflowY: 'auto', paddingBottom: '2rem' }}>
         {entries.length === 0 ? (
           <div className="text-sm text-[#7A6E5D] py-3.5">
             No deposit.
@@ -146,14 +170,15 @@ export const Statement = () => {
 
             return (
               <div key={group.key} className="mb-6">
-                <div className="flex justify-between items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider uppercase text-[#262220]">
+                <div className="flex justify-between font-mono items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider text-[#262220]">
                   <span>{label}</span>
-                  <span className="lft-num font-semibold font-mono">{fmt(group.total)}</span>
+                  <RenderAmount parentCss amount={group.total} />
                 </div>
 
                 {group.entries.map((entry) => {
                   const dEntry = new Date(entry.date + 'T00:00:00');
                   const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
+                  const isNegative = entry.amount < 0;
 
                   return (
                     <div key={entry.id} className="flex justify-between items-center py-2 border-b border-[#3F6B4C] text-sm">
@@ -161,14 +186,29 @@ export const Statement = () => {
                         <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
                         {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
                       </span>
-                      <span className="flex items-center gap-3">
-                        <span className="lft-num font-mono text-xs md:text-sm font-semibold">{fmt(entry.amount)}</span>
+                      <span className="flex items-center gap-2">
+                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                          {isNegative ? <DownArrow /> : <UpArrow />}
+                        </span>
+                        <span
+                          className="lft-num font-mono text-xs md:text-sm font-semibold"
+                          style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
+                        >
+                          <RenderAmount parentCss amount={entry.amount} />
+                        </span>
                         {isAdmin && (
                           <button
                             onClick={() => handleRemoveDeposit(entry)}
-                            className="bg-none underline border-none text-[#A8322D] cursor-pointer text-xs px-2 py-1 hover:underline"
+                            aria-label="Remove entry"
+                            title="Remove entry"
+                            className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
+                            style={{
+                              transition: 'background 0.15s',
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
                           >
-                            Remove
+                            <TrashIcon />
                           </button>
                         )}
                       </span>
