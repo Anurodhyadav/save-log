@@ -175,7 +175,6 @@ export const StatementChart = () => {
     }, [entries]);
 
 
-    console.log("THE PICK H", pieData)
 
     const chartData = view === 'monthly' ? monthlyData : weeklyData;
     const xKey = view === 'monthly' ? 'label' : 'key';

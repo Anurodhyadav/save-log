@@ -170,51 +170,57 @@ export const Statement = () => {
 
             return (
               <div key={group.key} className="mb-6">
-                <div className="flex justify-between font-mono items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider text-[#262220]">
-                  <span>{label}</span>
-                  <RenderAmount parentCss amount={group.total} />
+                <div className='rounded-md bg-[#FDF1E3] p-2 pb-0 shadow-xl '>
+                  <div className="flex justify-between font-mono items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider text-[#262220]">
+                    <span>{label}</span>
+                    <RenderAmount parentCss amount={group.total} />
+                  </div>
+
+                  {group.entries.map((entry) => {
+                    const dEntry = new Date(entry.date + 'T00:00:00');
+                    const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
+                    const isNegative = entry.amount < 0;
+
+                    return (
+                      <div key={entry.id} className="flex justify-between items-center py-2 border-b border-black/10 border-[#3F6B4C] text-sm">
+                        <span className="text-[#262220] flex gap-3 items-end">
+                          <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
+                          {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <span style={{ display: 'flex', alignItems: 'center' }}>
+                            {isNegative ? <DownArrow /> : <UpArrow />}
+                          </span>
+                          <span
+                            className="lft-num font-mono text-xs md:text-sm font-semibold"
+                            style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
+                          >
+                            <RenderAmount parentCss amount={entry.amount} />
+                          </span>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleRemoveDeposit(entry)}
+                              aria-label="Remove entry"
+                              title="Remove entry"
+                              className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
+                              style={{
+                                transition: 'background 0.15s',
+                              }}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                            >
+                              <TrashIcon />
+                            </button>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+
+
                 </div>
 
-                {group.entries.map((entry) => {
-                  const dEntry = new Date(entry.date + 'T00:00:00');
-                  const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
-                  const isNegative = entry.amount < 0;
-
-                  return (
-                    <div key={entry.id} className="flex justify-between items-center py-2 border-b border-[#3F6B4C] text-sm">
-                      <span className="text-[#262220] flex gap-3 items-end">
-                        <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
-                        {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <span style={{ display: 'flex', alignItems: 'center' }}>
-                          {isNegative ? <DownArrow /> : <UpArrow />}
-                        </span>
-                        <span
-                          className="lft-num font-mono text-xs md:text-sm font-semibold"
-                          style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
-                        >
-                          <RenderAmount parentCss amount={entry.amount} />
-                        </span>
-                        {isAdmin && (
-                          <button
-                            onClick={() => handleRemoveDeposit(entry)}
-                            aria-label="Remove entry"
-                            title="Remove entry"
-                            className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
-                            style={{
-                              transition: 'background 0.15s',
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
-                          >
-                            <TrashIcon />
-                          </button>
-                        )}
-                      </span>
-                    </div>
-                  );
-                })}
               </div>
             );
           })
