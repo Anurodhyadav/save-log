@@ -158,11 +158,12 @@ export const StatementChart = () => {
     }, [entries, activeMonth]);
 
     const totals = useMemo(() => {
-        const source = view === 'monthly' ? entries : entries.filter((e) => monthKey(e.date) === activeMonth);
+        const source = view === 'weekly' ? entries.filter((e) => monthKey(e.date) === activeMonth) : entries;
         const deposits = source.filter((e) => e.amount > 0).reduce((s, e) => s + e.amount, 0);
         const withdrawals = source.filter((e) => e.amount < 0).reduce((s, e) => s + Math.abs(e.amount), 0);
         return { deposits, withdrawals, net: deposits - withdrawals };
     }, [entries, view, activeMonth]);
+
 
     const pieData = useMemo(() => {
         const tiers = { Mini: 0, Small: 0, Standard: 0, Large: 0 };
@@ -172,6 +173,9 @@ export const StatementChart = () => {
             .filter(([, sum]) => sum > 0)
             .map(([name, value]) => ({ name, value }));
     }, [entries]);
+
+
+    console.log("THE PICK H", pieData)
 
     const chartData = view === 'monthly' ? monthlyData : weeklyData;
     const xKey = view === 'monthly' ? 'label' : 'key';
