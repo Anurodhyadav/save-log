@@ -30,7 +30,16 @@ export const Home = () => {
     byMonth[k] = (byMonth[k] || 0) + e.amount;
   });
   const monthKeys = Object.keys(byMonth);
-  const avg = monthKeys.length > 0 ? totalEntries / monthKeys.length : 0;
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const effectiveMonths = monthKeys.reduce((sum, k) => {
+    if (k === currentMonthKey) {
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      return sum + now.getDate() / daysInMonth;
+    }
+    return sum + 1;
+  }, 0);
+  const avg = effectiveMonths > 0 ? totalEntries / effectiveMonths : 0;
 
   // Render Triangle Border (inline SVG generators)
   const renderTriangles = (flip) => {
@@ -110,7 +119,7 @@ export const Home = () => {
               style={{ width: `${pct}%` }}
             ></div>
             <span className="relative z-10 font-mono text-xs md:text-sm font-bold text-[#1E3324] bg-white/55 px-1.5 py-0.5 rounded">
-              SAVINGS GOAL · {fmt(settings.goal)}
+              SAVINGS GOAL  {fmt(settings.goal)}
             </span>
           </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { depositsRef } from '../firebase';
@@ -31,6 +31,27 @@ const TrashIcon = () => (
   </svg>
 );
 
+const ChevronIcon = ({ isOpen }) => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    style={{
+      transition: 'transform 0.3s ease',
+      transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+      flexShrink: 0,
+    }}
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
 export const Statement = () => {
   const { entries, isAdmin, setSyncState } = useAppContext();
   const location = useLocation();
@@ -38,6 +59,19 @@ export const Statement = () => {
 
   const [pendingDelete, setPendingDelete] = useState(null); // entry object awaiting confirmation
   const [toast, setToast] = useState(null); // { key, type, message }
+
+  // Current month key (e.g. "2026-09")
+  const currentMonthKey = useMemo(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }, []);
+
+  // Track which month sections are open; current month is open by default
+  const [openMonths, setOpenMonths] = useState({ [currentMonthKey]: true });
+
+  const toggleMonth = (key) => {
+    setOpenMonths((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
 
   const fmt = (n) => 'Rs\u2009' + fmtNum(n);
@@ -167,57 +201,83 @@ export const Statement = () => {
           getGroupedEntries().map((group) => {
             const dMonth = new Date(group.key + '-01T00:00:00');
             const label = dMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            const isOpen = !!openMonths[group.key];
 
             return (
               <div key={group.key} className="mb-6">
-                <div className='rounded-md bg-[#FDF1E3] p-2 pb-0 shadow-xl '>
-                  <div className="flex justify-between font-mono items-center py-2 mt-1 border-b-2 border-[#262220] text-sm md:text-base font-bold tracking-wider text-[#262220]">
-                    <span>{label}</span>
-                    <RenderAmount parentCss amount={group.total} />
+                <div className='rounded-md bg-[#FDF1E3] px-2 py-1  shadow-xl '>
+                  <div
+                    className={`flex justify-between font-mono items-center py-2 mt-1 ${isOpen ? 'border-b-2 border-[#262220]' : ''} text-sm md:text-base font-bold tracking-wider text-[#262220] cursor-pointer select-none`}
+                    onClick={() => toggleMonth(group.key)}
+                    role="button"
+                    aria-expanded={isOpen}
+                    aria-controls={`month-entries-${group.key}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMonth(group.key); } }}
+                  >
+                    <span className="flex items-center gap-1">
+                      <span>{label}</span>
+                      {
+                        !isOpen && <span className="text-[#7A6E5D] text-xs font-normal" style={{ fontFamily: 'inherit' }}>
+                          ({group.entries.length})
+                        </span>
+                      }
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <RenderAmount parentCss amount={group.total} />
+                      <ChevronIcon isOpen={isOpen} />
+                    </span>
                   </div>
 
-                  {group.entries.map((entry) => {
-                    const dEntry = new Date(entry.date + 'T00:00:00');
-                    const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
-                    const isNegative = entry.amount < 0;
+                  <div
+                    id={`month-entries-${group.key}`}
+                    style={{
+                      overflow: 'hidden',
+                      maxHeight: isOpen ? `${group.entries.length * 60}px` : '0px',
+                      transition: 'max-height 0.35s ease',
+                    }}
+                  >
+                    {group.entries.map((entry) => {
+                      const dEntry = new Date(entry.date + 'T00:00:00');
+                      const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
+                      const isNegative = entry.amount < 0;
 
-                    return (
-                      <div key={entry.id} className="flex justify-between items-center py-2 border-b border-black/10 border-[#3F6B4C] text-sm">
-                        <span className="text-[#262220] flex gap-3 items-end">
-                          <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
-                          {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <span style={{ display: 'flex', alignItems: 'center' }}>
-                            {isNegative ? <DownArrow /> : <UpArrow />}
+                      return (
+                        <div key={entry.id} className="flex justify-between items-center py-2 border-b border-black/10 border-[#3F6B4C] text-sm">
+                          <span className="text-[#262220] flex gap-3 items-end">
+                            <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
+                            {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
                           </span>
-                          <span
-                            className="lft-num font-mono text-xs md:text-sm font-semibold"
-                            style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
-                          >
-                            <RenderAmount parentCss amount={entry.amount} />
-                          </span>
-                          {isAdmin && (
-                            <button
-                              onClick={() => handleRemoveDeposit(entry)}
-                              aria-label="Remove entry"
-                              title="Remove entry"
-                              className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
-                              style={{
-                                transition: 'background 0.15s',
-                              }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                          <span className="flex items-center gap-2">
+                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                              {isNegative ? <DownArrow /> : <UpArrow />}
+                            </span>
+                            <span
+                              className="lft-num font-mono text-xs md:text-sm font-semibold"
+                              style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
                             >
-                              <TrashIcon />
-                            </button>
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-
-
+                              <RenderAmount parentCss amount={entry.amount} />
+                            </span>
+                            {isAdmin && (
+                              <button
+                                onClick={() => handleRemoveDeposit(entry)}
+                                aria-label="Remove entry"
+                                title="Remove entry"
+                                className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
+                                style={{
+                                  transition: 'background 0.15s',
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                              >
+                                <TrashIcon />
+                              </button>
+                            )}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
 
                 </div>
 
