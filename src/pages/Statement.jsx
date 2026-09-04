@@ -74,7 +74,7 @@ export const Statement = () => {
   };
 
 
-  const fmt = (n) => 'Rs\u2009' + fmtNum(n);
+  const fmt = (n) => 'Rs:\u2009' + n;
 
   const monthKey = (dateStr) => dateStr.slice(0, 7);
 
@@ -292,7 +292,7 @@ export const Statement = () => {
         title="Remove this entry?"
         message={
           pendingDelete
-            ? `This will permanently remove the ${pendingDelete.amount < 0 ? 'withdrawal' : 'deposit'} of ${fmt(Math.abs(pendingDelete.amount))}${pendingDelete.note ? ` (${pendingDelete.note})` : ''} dated ${new Date(pendingDelete.date + 'T00:00:00').toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}. This can't be undone.`
+            ? `This will permanently remove the ${pendingDelete.amount < 0 ? 'withdrawal' : 'deposit'} of ${fmt(Math.abs(pendingDelete.amount))} made on ${new Date(pendingDelete.date + 'T00:00:00').toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}.`
             : ''
         }
         confirmLabel="Remove"
