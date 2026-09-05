@@ -9,6 +9,8 @@ export const AddTransaction = () => {
   const { isAdmin, setSyncState } = useAppContext();
   const [date, setDate] = useState('');
   const [amount, setAmount] = useState('');
+  const [depositedBy, setDepositedBy] = useState('Anurodh');
+  const [bank, setBank] = useState('Manjushree-AN');
   const [note, setNote] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
@@ -45,6 +47,8 @@ export const AddTransaction = () => {
     addDoc(depositsRef, {
       date: date || getTodayStr(),
       amount: parsedAmt,
+      depositedBy: depositedBy || 'Anurodh',
+      bank: bank || 'Manjushree-AN',
       note: note.trim(),
       createdAt: serverTimestamp(),
       createdBy: auth.currentUser ? auth.currentUser.uid : null
@@ -55,6 +59,8 @@ export const AddTransaction = () => {
         setAmount('');
         setNote('');
         setDate(getTodayStr());
+        setDepositedBy('Anurodh');
+        setBank('Manjushree-AN');
         setTimeout(() => {
           navigate('/');
         }, 2500)
@@ -82,7 +88,7 @@ export const AddTransaction = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             disabled={!isAdmin}
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white appearance-none"
+            className="w-full font-mono text-[#262220] text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white appearance-none"
           />
         </label>
 
@@ -94,9 +100,35 @@ export const AddTransaction = () => {
             onChange={(e) => { setAmount(e.target.value); setErrorMsg(''); }}
             disabled={!isAdmin}
             step="100"
-            placeholder="500"
-            className="w-full font-mono text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
+            placeholder="xxx"
+            className="w-full font-mono text-[#262220] text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
           />
+        </label>
+
+        <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Deposited By
+          <select
+            value={depositedBy}
+            onChange={(e) => setDepositedBy(e.target.value)}
+            disabled={!isAdmin}
+            className="w-full font-mono text-[#262220] text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
+          >
+            <option value="Anurodh">Anurodh</option>
+            <option value="Pramodh">Pramodh</option>
+            <option value="Parent">Parent</option>
+          </select>
+        </label>
+
+        <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Bank
+          <select
+            value={bank}
+            onChange={(e) => setBank(e.target.value)}
+            disabled={!isAdmin}
+            className="w-full font-mono text-[#262220] text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
+          >
+            <option value="Manjushree-AN">Manjushree-AN</option>
+            <option value="NBL-RAJ">NBL-RAJ</option>
+            <option value="NIC-RITA">NIC-RITA</option>
+          </select>
         </label>
 
         <label className="text-sm md:text-base text-[#7A6E5D] flex flex-col gap-2">Note (optional)
@@ -106,7 +138,7 @@ export const AddTransaction = () => {
             onChange={(e) => setNote(e.target.value)}
             disabled={!isAdmin}
             placeholder="daily savings, salary top-up..."
-            className="w-full text-base md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
+            className="w-full text-base text-[#262220] md:text-lg px-3 py-3 border border-[#262220] rounded bg-white"
           />
         </label>
 

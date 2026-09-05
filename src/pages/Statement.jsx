@@ -31,10 +31,10 @@ const TrashIcon = () => (
   </svg>
 );
 
-const ChevronIcon = ({ isOpen }) => (
+const ChevronIcon = ({ isOpen, size = 18 }) => (
   <svg
-    width="18"
-    height="18"
+    width={size}
+    height={size}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -52,6 +52,46 @@ const ChevronIcon = ({ isOpen }) => (
   </svg>
 );
 
+const DEPOSITED_BY_SHORT = {
+  'Anurodh': 'AY',
+  'Pramodh': 'PY',
+  'Parent': 'PR',
+};
+
+const BANK_SHORT = {
+  'Manjushree-AN': 'MF-AN',
+  'NBL-RAJ': 'NBL-RAJ',
+  'NIC-RITA': 'NIC-RITA',
+};
+
+const DEPOSITED_BY_STYLES = {
+  'Anurodh': 'bg-[#DCE7F5] text-[#1D3557] border-[#BCD2EE]', // Slate Blue
+  'Pramodh': 'bg-[#EFE6F7] text-[#4A1D6E] border-[#D9C4EC]', // Soft Violet / Lavender
+  'Parent': 'bg-[#FDE8CA] text-[#784306] border-[#F2CB94]',  // Warm Amber / Gold
+};
+
+const BANK_STYLES = {
+  'Manjushree-AN': 'bg-[#DCEDE2] text-[#1E4D2B] border-[#B5D8C0]', // Sage Green
+  'NBL-RAJ': 'bg-[#D4EFF2] text-[#0C4E55] border-[#A8DEE4]',       // Teal / Aqua
+  'NIC-RITA': 'bg-[#FCE3E4] text-[#7A1E28] border-[#F6BDC1]',      // Rose / Coral
+};
+
+const getDepositedByShort = (name) => {
+  return DEPOSITED_BY_SHORT[name] || (name ? name.slice(0, 2).toUpperCase() : 'AY');
+};
+
+const getBankShort = (bank) => {
+  return BANK_SHORT[bank] || (bank || 'MF-AN');
+};
+
+const getDepositedByStyle = (name) => {
+  return DEPOSITED_BY_STYLES[name] || 'bg-[#DCE7F5] text-[#1D3557] border-[#BCD2EE]';
+};
+
+const getBankStyle = (bank) => {
+  return BANK_STYLES[bank] || 'bg-[#DCEDE2] text-[#1E4D2B] border-[#B5D8C0]';
+};
+
 export const Statement = () => {
   const { entries, isAdmin, setSyncState } = useAppContext();
   const location = useLocation();
@@ -59,6 +99,11 @@ export const Statement = () => {
 
   const [pendingDelete, setPendingDelete] = useState(null); // entry object awaiting confirmation
   const [toast, setToast] = useState(null); // { key, type, message }
+  const [openEntries, setOpenEntries] = useState({}); // { [entryId]: boolean }
+
+  const toggleEntry = (id) => {
+    setOpenEntries((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   // Current month key (e.g. "2026-09")
   const currentMonthKey = useMemo(() => {
@@ -233,47 +278,137 @@ export const Statement = () => {
                     id={`month-entries-${group.key}`}
                     style={{
                       overflow: 'hidden',
-                      maxHeight: isOpen ? `${group.entries.length * 60}px` : '0px',
+                      maxHeight: isOpen ? `${Math.max(1000, group.entries.length * 350)}px` : '0px',
                       transition: 'max-height 0.35s ease',
                     }}
                   >
                     {group.entries.map((entry) => {
                       const dEntry = new Date(entry.date + 'T00:00:00');
                       const dayLabel = dEntry.toLocaleString('en-US', { day: '2-digit', month: 'short' });
+                      const fullDateLabel = dEntry.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' });
                       const isNegative = entry.amount < 0;
 
+                      const depositedBy = entry.depositedBy || 'Anurodh';
+                      const shortDepositedBy = getDepositedByShort(depositedBy);
+                      const depositedByStyle = getDepositedByStyle(depositedBy);
+
+                      const bank = entry.bank || 'Manjushree-AN';
+                      const shortBank = getBankShort(bank);
+                      const bankStyle = getBankStyle(bank);
+
+                      const isEntryOpen = !!openEntries[entry.id];
+
                       return (
-                        <div key={entry.id} className="flex justify-between items-center py-2 border-b border-black/10 border-[#3F6B4C] text-sm">
-                          <span className="text-[#262220] flex gap-3 items-end">
-                            <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[52px]">{dayLabel}</span>
-                            {entry.note && <span className="text-[#7A6E5D] text-xs md:text-sm">{entry.note}</span>}
-                          </span>
-                          <span className="flex items-center gap-2">
-                            <span style={{ display: 'flex', alignItems: 'center' }}>
-                              {isNegative ? <DownArrow /> : <UpArrow />}
-                            </span>
-                            <span
-                              className="lft-num font-mono text-xs md:text-sm font-semibold"
-                              style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
-                            >
-                              <RenderAmount parentCss amount={entry.amount} />
-                            </span>
-                            {isAdmin && (
-                              <button
-                                onClick={() => handleRemoveDeposit(entry)}
-                                aria-label="Remove entry"
-                                title="Remove entry"
-                                className='bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm'
-                                style={{
-                                  transition: 'background 0.15s',
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                        <div key={entry.id} className="border-b border-black/10 border-[#3F6B4C]">
+                          <div
+                            className="flex justify-between items-center py-2.5 cursor-pointer select-none text-sm transition-colors hover:bg-black/[0.02] rounded px-1 -mx-1"
+                            onClick={() => toggleEntry(entry.id)}
+                            role="button"
+                            aria-expanded={isEntryOpen}
+                            aria-controls={`entry-details-${entry.id}`}
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleEntry(entry.id);
+                              }
+                            }}
+                          >
+                            <span className="text-[#262220] flex items-center gap-2 md:gap-3 flex-wrap">
+                              <span className="lft-num font-mono text-xs md:text-sm text-[#7A6E5D] min-w-[48px] font-medium">
+                                {dayLabel}
+                              </span>
+                              <span
+                                className={`font-mono text-[11px] font-bold px-1.5 py-0.5 rounded border shadow-sm ${depositedByStyle}`}
+                                title={`Deposited By: ${depositedBy}`}
                               >
-                                <TrashIcon />
-                              </button>
-                            )}
-                          </span>
+                                {shortDepositedBy}
+                              </span>
+                              <span
+                                className={`font-mono text-[11px] font-semibold px-1.5 py-0.5 rounded border shadow-sm ${bankStyle}`}
+                                title={`Bank: ${bank}`}
+                              >
+                                {shortBank}
+                              </span>
+                            </span>
+
+                            <span className="flex items-center gap-2">
+                              <span style={{ display: 'flex', alignItems: 'center' }}>
+                                {isNegative ? <DownArrow /> : <UpArrow />}
+                              </span>
+                              <span
+                                className="lft-num font-mono text-xs md:text-sm font-semibold"
+                                style={{ color: isNegative ? '#C0392B' : '#27AE60', letterSpacing: 0 }}
+                              >
+                                <RenderAmount parentCss amount={entry.amount} />
+                              </span>
+                              <span className="text-[#7A6E5D] flex items-center">
+                                <ChevronIcon isOpen={isEntryOpen} size={14} />
+                              </span>
+                              {isAdmin && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveDeposit(entry);
+                                  }}
+                                  aria-label="Remove entry"
+                                  title="Remove entry"
+                                  className="bg-bone cursor-pointer text-[#A8322D] text-xs p-1 flex items-center justify-center rounded-sm ml-0.5"
+                                  style={{
+                                    transition: 'background 0.15s',
+                                  }}
+                                  onMouseEnter={(e) => (e.currentTarget.style.background = '#f0ece0')}
+                                  onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                                >
+                                  <TrashIcon />
+                                </button>
+                              )}
+                            </span>
+                          </div>
+
+                          <div
+                            id={`entry-details-${entry.id}`}
+                            style={{
+                              maxHeight: isEntryOpen ? '300px' : '0px',
+                              opacity: isEntryOpen ? 1 : 0,
+                              overflow: 'hidden',
+                              transition: 'max-height 0.3s ease, opacity 0.25s ease',
+                            }}
+                          >
+                            <div className="bg-[#F8F4EA] border border-[#E3DCBD] rounded p-3 mb-2.5 text-xs md:text-sm text-[#262220] shadow-inner">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-2">
+                                <div>
+                                  <div className="text-[11px] text-[#7A6E5D] uppercase tracking-wider font-semibold">Deposited By</div>
+                                  <div className="mt-0.5">
+                                    <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded border inline-block ${depositedByStyle}`}>
+                                      {depositedBy}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-[11px] text-[#7A6E5D] uppercase tracking-wider font-semibold">Bank</div>
+                                  <div className="mt-0.5">
+                                    <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded border inline-block ${bankStyle}`}>
+                                      {bank}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-[11px] text-[#7A6E5D] uppercase tracking-wider font-semibold">Date</div>
+                                  <div className="font-mono text-[#262220] mt-1">{fullDateLabel}</div>
+                                </div>
+                              </div>
+
+                              <div className="pt-2 border-t border-[#E3DCBD]">
+                                <div className="text-[11px] text-[#7A6E5D] uppercase tracking-wider font-semibold mb-1">Notes</div>
+                                {entry.note ? (
+                                  <p className="text-[#262220] whitespace-pre-wrap break-words">{entry.note}</p>
+                                ) : (
+                                  <p className="text-[#7A6E5D] italic">No notes for this transaction.</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
