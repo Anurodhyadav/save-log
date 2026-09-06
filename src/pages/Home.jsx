@@ -142,7 +142,7 @@ export const Home = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
         <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-3">
           <div className="text-xs text-[#7A6E5D]">Progress</div>
-          <div className="font-mono text-base md:text-lg font-bold">{Math.round(pct)}%</div>
+          <div className="font-mono text-base md:text-lg font-bold">{pct.toFixed(1)}%</div>
         </div>
         <div className="bg-[#F2EFE4] border border-[#D9D3C0] p-3">
           <div className="text-xs text-[#7A6E5D]">Remaining</div>
