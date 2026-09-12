@@ -127,6 +127,9 @@ const weekOfMonth = (dateStr) => Math.floor((parseInt(dateStr.slice(8, 10), 10) 
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
+    const depositsEntry = payload.find((p) => p.dataKey === 'deposits');
+    const withdrawalsEntry = payload.find((p) => p.dataKey === 'withdrawals');
+    const monthlyNet = (depositsEntry?.value ?? 0) - (withdrawalsEntry?.value ?? 0);
     return (
         <div
             style={{
@@ -139,11 +142,20 @@ const CustomTooltip = ({ active, payload, label }) => {
             }}
         >
             <div style={{ fontWeight: 600, marginBottom: 4, color: COLORS.text }}>{label}</div>
-            {payload.map((p) => (
-                <div key={p.dataKey} style={{ color: p.color }}>
-                    {p.name}: {fmt(p.name === 'Withdrawals' ? -Math.abs(p.value) : p.value)}
-                </div>
-            ))}
+            {payload.map((p) => {
+                if (p.dataKey === 'balance') {
+                    return (
+                        <div key={p.dataKey} style={{ color: p.color }}>
+                            {p.name}: {fmt(monthlyNet)}
+                        </div>
+                    );
+                }
+                return (
+                    <div key={p.dataKey} style={{ color: p.color }}>
+                        {p.name}: {fmt(p.name === 'Withdrawals' ? -Math.abs(p.value) : p.value)}
+                    </div>
+                );
+            })}
         </div>
     );
 };
@@ -241,19 +253,19 @@ export const StatementChart = () => {
             <div className="flex flex-wrap items-center gap-2 mb-5">
                 <button
                     onClick={() => setView('monthly')}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'monthly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
+                    className={`px-3 py-1.5 text-sm rounded-full cursor-pointer border transition-colors ${view === 'monthly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
                 >
                     Monthly
                 </button>
                 <button
                     onClick={() => setView('weekly')}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'weekly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
+                    className={`px-3 py-1.5 text-sm cursor-pointer rounded-full border transition-colors ${view === 'weekly' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
                 >
                     Weekly
                 </button>
                 <button
                     onClick={() => setView('pie')}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${view === 'pie' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
+                    className={`px-3 py-1.5 text-sm cursor-pointer rounded-full border transition-colors ${view === 'pie' ? 'bg-[#262220] text-[#F2E8D9] border-[#262220]' : 'text-[#7A6E5D] border-[#DDD0BA]'}`}
                 >
                     Pie Chart
                 </button>
