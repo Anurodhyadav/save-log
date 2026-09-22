@@ -72,7 +72,7 @@ const DEPOSITED_BY_STYLES = {
 
 const BANK_STYLES = {
   'Manjushree-AN': 'bg-[#DCEDE2] text-[#1E4D2B] border-[#B5D8C0]', // Sage Green
-  'NBL-RAJ': 'bg-[#D4EFF2] text-[#0C4E55] border-[#A8DEE4]',       // Teal / Aqua
+  'NBL-RAJ': 'bg-[#F7E2D3] text-[#8B3A1E] border-[#EBC2A3]',       // Rust
   'NIC-RITA': 'bg-[#FCE3E4] text-[#7A1E28] border-[#F6BDC1]',      // Rose / Coral
 };
 
